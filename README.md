@@ -5,40 +5,40 @@ The current plan is to create a cross platform cpp app (using Makefile) which ut
 
 NOTE: since this is a project of significant scope being built (essentially) from scratch, there is a good chance that the target will be only to set up the game for the first gym's worth of content.
 
----> Tool Usage Plan:
-SDL:
+---> Tool Usage Plan
+SDL
   Window creation / management
   Music integration
   Controller interface
   
-OpenGL:
+OpenGL
   Graphics rendering (expand upon this more later)
   
-C++:
+C++
   Coding language for the project
   Object Oriented approach
   
-googletest:
+googletest
   This is not set in stone; however, it may be interesting to integrate unit testing with open gl etc
 
 ---> Approach
-1.  Get Window Up and Running (check)
-2.  Set Up Simple Movement W/ Relevant Sprites
-3.  Get Map Loading & Room Logic to Work
-4.  Set Up Music loop
-4.  Set Up Database Using XML
-5.     With Pokedoges
-6.     With Maps / Rooms
-7.  Get Player & Random Encounters Working
-8.  Set Up Battle Technicalities
-9.     Put moves in database
-10.    Calculations for effectivity & experience etc.
-11. Set Up NPCs
-12.    Set up NPC convo database
-13.    Get Non-Active NPCs in Pallet town to work
-14.    Set up cutscene content for Pallet town
-14.    Get Active NPCs in Pallet town to work
-15. Hopefully by this point most low level dev will be done: from here implement up to first gym then see how it goes...
+1:  Get Window Up and Running (check)
+2:  Set Up Simple Movement W/ Relevant Sprites
+3:  Get Map Loading & Room Logic to Work
+4:  Set Up Music loop
+5:  Set Up Database Using XML
+6:     With Pokedoges
+7:     With Maps / Rooms
+8:  Get Player & Random Encounters Working
+9:  Set Up Battle Technicalities
+10:    Put moves in database
+11:    Calculations for effectivity & experience etc.
+12: Set Up NPCs
+13:    Set up NPC convo database
+14:    Get Non-Active NPCs in Pallet town to work
+15:    Set up cutscene content for Pallet town
+16:    Get Active NPCs in Pallet town to work
+17: Hopefully by this point most low level dev will be done: from here implement up to first gym then see how it goes...
 
 ---> Cpp Expectations
 Standard (clean) C++ coding practice 
