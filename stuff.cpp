@@ -17,7 +17,7 @@
  */
 
 #include <iostream>
-#include "SDL/SDL.h"
+#include "deps/include/SDL/SDL.h"
 
 using namespace std;
 
@@ -45,9 +45,18 @@ int main(int argc, char** args)
     	return 1;
     }
 
-    // wait for ui to end prgm
-    system("PAUSE");
-
+    bool running = true;
+    while(running)
+    {
+        // keep going until close signal is sent...
+        SDL_Event events;
+        while(SDL_PollEvent(&events))
+        { 
+            if(events.type == SDL_QUIT)
+                running = false;
+        }
+    }
+    
     // exit the window (SDL)
     SDL_Quit();
 
