@@ -29,7 +29,7 @@ SDL_Window* gWindow = NULL;
 
 int main(int argc, char** args)
 {
-	// predefined sdl initialization macro & func
+    // predefined sdl initialization macro & func
     cout << "init: " << SDL_Init(SDL_INIT_EVERYTHING) << endl;
     
     // create window
@@ -46,6 +46,14 @@ int main(int argc, char** args)
     bool running = true;
     while(running)
     {
+        // TODO: this loop should probably be put into a game clas
+        // such a class would do a variety of things such as
+        // 1. interface with SDL
+        // 2. run the main game loop
+        // 3. contain error handling and possibly logging
+        // if this were the case then main.cpp would merely need to create
+        // a game object and utilize it
+
         // keep going until close signal is sent...
         SDL_Event events;
         while(SDL_PollEvent(&events))
