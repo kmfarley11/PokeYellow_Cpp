@@ -17,7 +17,7 @@
  */
 
 #include <iostream>
-#include "deps/include/SDL/SDL.h"
+#include "SDL/SDL.h"
 
 using namespace std;
 
