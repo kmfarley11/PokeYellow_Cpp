@@ -1,28 +1,26 @@
 /* HEAD INFO
- *  stuff.cpp: main file for messing with SDL
+ *  main.cpp: main file for project
  *  by: Kevin Farley 12 - 2015
  *
  * DESCRIPTION
  *  based on tutorials found online
  *  uses openGL (SDL) in c++ to create a windowed graphical application
  *
- * TO RUN (in cmd w/ mingw):
- *  cd to Desktop (or file locations)
+ * TO RUN (in cmd w/ mingw or linux with g++):
+ *  cd to src
  *  make
- *  main
+ *  main (or ./main)
  *
  * NOTES (installation / building):
  *  make will only work if the downloaded SDL lib and includes are
  *  copied / extracted into your local C:\MINGW dir
+ *  the setup is a lot easier on linux (sudo apt-get SDL...)
  */
 
 #include <iostream>
 #include "SDL/SDL.h"
 
 using namespace std;
-
-// prototypes
-void DoIt();
 
 // params / global vars
 int SCREEN_WIDTH = 250;
@@ -53,7 +51,9 @@ int main(int argc, char** args)
         while(SDL_PollEvent(&events))
         { 
             if(events.type == SDL_QUIT)
+            {
                 running = false;
+            }
         }
     }
     
@@ -62,12 +62,4 @@ int main(int argc, char** args)
 
     // edit the app
 	return 0;
-}
-
-void DoIt()
-{
-	// static vars allow to initialize only once
-	static int i = 5;
-	i += 1;
-	cout << "i: " << i << endl;
 }
