@@ -1,4 +1,5 @@
-GTDIR=../deps/gtest/googletest
+IDIR=../deps/include/
+LDIR=../deps/lib/
 
 # targets / executables
 all: tester
@@ -8,7 +9,7 @@ tester: tester.o
 
 # build files into reusable object files
 tester.o: tester.cpp
-	g++ -c -isystem ${GTDIR}/include -pthread tester.cpp 
+	g++ -c -isystem ${IDIR} -pthread tester.cpp 
 
 # clean up object files & executables
 clean:
