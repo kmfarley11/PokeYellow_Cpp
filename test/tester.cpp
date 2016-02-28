@@ -6,10 +6,12 @@
 
 // global vars
 bool check = false;
-void Live()
-{
-    check = true;
-}
+int mock_SCREEN_WIDTH = 1024;
+int mock_SCREEN_HEIGHT = 768;
+int mock_FLAGS = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
+
+// man handling test stuff (hacky)
+void Alive() { check = true; }
 
 using namespace testing;
 
@@ -17,7 +19,7 @@ using namespace testing;
 class GameMock : public Game { 
 public: 
     // method mocking can be used to to fake a method call
-    GameMock() { Live(); }
+    GameMock() { Alive(); }
 
     // or to trigger call expectations
     MOCK_METHOD0(Die, void());
@@ -27,7 +29,7 @@ public:
 // test constructor
 TEST(Game, constuctor_SetsUp) 
 {
-    GameMock *gMock = new GameMock();
+    GameMock *gMock = gMock = new GameMock();
     
     // NOTE: we can't easily expect the constructor since we pass the object,
     // and the call happens on the object's construction... therefore we externalize
@@ -36,9 +38,15 @@ TEST(Game, constuctor_SetsUp)
     check = false;
 
     EXPECT_FALSE(gMock->isRunning());
+    EXPECT_FALSE(gMock->sdlIsLoaded());
+    EXPECT_FALSE(gMock->hasWindow());
+
+    EXPECT_TRUE(gMock->getScreenWidth() == mock_SCREEN_WIDTH);
+    EXPECT_TRUE(gMock->getScreenHeight() == mock_SCREEN_HEIGHT);
+    EXPECT_TRUE(gMock->getWindowFlags() == mock_FLAGS);
 
     // more for suppression than expectation
-    EXPECT_CALL(*gMock, Die());
+    EXPECT_CALL(*gMock, Die()).Times(AnyNumber());
     delete gMock;
 }
 
@@ -46,21 +54,69 @@ TEST(Game, constuctor_SetsUp)
 TEST(Game, destructor_TearsDown) 
 {
     GameMock *gMock = new GameMock();
-    EXPECT_FALSE(gMock->isRunning());
     EXPECT_CALL(*gMock, Die());
     delete gMock;
 }
 
-// test initializer
-TEST(Game, initGame_succeeds) 
+TEST(Game, isRunning_ReportsCorrectGameStatus) 
 {
     GameMock gMock;
     EXPECT_FALSE(gMock.isRunning());
-    EXPECT_TRUE(gMock.initGame());
+    gMock.initGame();
     EXPECT_TRUE(gMock.isRunning());
 
     // more for suppression than expectation
-    EXPECT_CALL(gMock, Die());
+    EXPECT_CALL(gMock, Die()).Times(AnyNumber());
+}
+
+TEST(Game, initGame_Succeeds) 
+{
+    GameMock gMock;
+    EXPECT_TRUE(gMock.initGame());
+    EXPECT_TRUE(gMock.sdlIsLoaded());
+    EXPECT_TRUE(gMock.hasWindow());
+    EXPECT_TRUE(gMock.isRunning());
+
+    // more for suppression than expectation
+    EXPECT_CALL(gMock, Die()).Times(AnyNumber());
+}
+
+TEST(Game, handleInput_FailsWithoutSdlInit) 
+{
+    GameMock gMock;
+    EXPECT_FALSE(gMock.handleInput());
+
+    // more for suppression than expectation
+    EXPECT_CALL(gMock, Die()).Times(AnyNumber());
+}
+
+TEST(Game, handleInput_SucceedsWithSdlInit) 
+{
+    GameMock gMock;
+    gMock.initGame();
+    EXPECT_TRUE(gMock.handleInput());
+
+    // more for suppression than expectation
+    EXPECT_CALL(gMock, Die()).Times(AnyNumber());
+}
+
+TEST(Game, drawScene_FailsWithoutSdlInit) 
+{
+    GameMock gMock;
+    EXPECT_FALSE(gMock.drawScene());
+
+    // more for suppression than expectation
+    EXPECT_CALL(gMock, Die()).Times(AnyNumber());
+}
+
+TEST(Game, drawScene_SucceedsWithSdlInit) 
+{
+    GameMock gMock;
+    gMock.initGame();
+    EXPECT_TRUE(gMock.drawScene());
+
+    // more for suppression than expectation
+    EXPECT_CALL(gMock, Die()).Times(AnyNumber());
 }
 
 // TODO: once a few classes have been made, consider making suites

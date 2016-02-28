@@ -19,8 +19,9 @@ int FLAGS = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 Game::Game()
 {
     running = false;
+    sdlLoaded = false;
     gameWindow = NULL;
-    mainGlContext;// = NULL;
+    mainGlContext;
 
     screenWidth = SCREEN_WIDTH;
     screenHeight = SCREEN_HEIGHT;
@@ -31,7 +32,7 @@ Game::~Game()
 {
     running = false;
     gameWindow = NULL;
-    mainGlContext;// = NULL;
+    mainGlContext;
 
     // clean up resources before quitting
     SDL_GL_DeleteContext(mainGlContext);
@@ -42,11 +43,6 @@ Game::~Game()
 }
 
 // Interfacing methods
-bool Game::isRunning()
-{
-    return running;
-}
-
 bool Game::initGame()
 {
     std::string genErrString = " encountered an issue: ";
@@ -57,6 +53,8 @@ bool Game::initGame()
         std::cout << "SDL" << genErrString << "init failed";
         return false;
     }
+    
+    sdlLoaded = true;
     
     // create window
     gameWindow = SDL_CreateWindow("Game Window", SDL_WINDOWPOS_UNDEFINED, 
@@ -93,57 +91,109 @@ bool Game::initGame()
 
 bool Game::handleInput()
 {
-    SDL_Event event;
-    // bool success = false;;
-    while(SDL_PollEvent(&event))
-    { 
-        // the close button was pressed
-        if(event.type == SDL_QUIT)
-        {
-            running = false;
-        }
-        if(event.type == SDL_KEYDOWN) 
-        {
-            // the “ESCAPE” key is pressed:
-            if (event.key.keysym.sym == SDLK_ESCAPE)
+    bool success = false;
+    if (sdlIsLoaded())
+    {
+        SDL_Event event;
+        while(SDL_PollEvent(&event))
+        { 
+            // the close button was pressed
+            if(event.type == SDL_QUIT)
             {
                 running = false;
             }
+            if(event.type == SDL_KEYDOWN) 
+            {
+                // the “ESCAPE” key is pressed:
+                if (event.key.keysym.sym == SDLK_ESCAPE)
+                {
+                    running = false;
+                }
+            }
+            success = true;
         }
-        // success = true;
     }
-    return true;
-    //return success;
+    return success;
 }
 
 bool Game::drawScene()
 {
-    // Clear the screen and the depth buffer
-    glClearDepth(1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    bool success = false;
+    if (sdlIsLoaded())
+    {
+        // Clear the screen and the depth buffer
+        glClearDepth(1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Reset The View
-    glLoadIdentity();
+        // Reset The View
+        glLoadIdentity();
 
-    // Draw something HERE .....
-    ///////////////////////////////////////////////////////////////////
-    // simple (ugly) triangle...
-    // Tell opengl we want to use color. (only needed for immediate mode)
-    glEnableClientState(GL_COLOR_ARRAY);
+        // Draw something HERE .....
+        ///////////////////////////////////////////////////////////////////
+        // simple (ugly) triangle...
+        // Tell opengl we want to use color. (only needed for immediate mode)
+        glEnableClientState(GL_COLOR_ARRAY);
 
-    // Draw a triangle using the (crappy) immediate mode
-    glBegin(GL_TRIANGLES);
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex2f(0, 0);
-    glVertex2f(0, 500);
-    glVertex2f(500, 500);
-    glEnd();
-    ///////////////////////////////////////////////////////////////////
+        // Draw a triangle using the (crappy) immediate mode
+        glBegin(GL_TRIANGLES);
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glVertex2f(0, 0);
+        glVertex2f(0, 500);
+        glVertex2f(500, 500);
+        glEnd();
+        ///////////////////////////////////////////////////////////////////
 
-    // swap buffers to display, since we're double buffered.
-    SDL_GL_SwapWindow(gameWindow);
+        // swap buffers to display, since we're double buffered.
+        SDL_GL_SwapWindow(gameWindow);
 
-    return true;
+        success = true;
+    }
+
+    return success;
+}
+
+bool Game::isRunning()
+{
+    return running;
+}
+
+bool Game::sdlIsLoaded()
+{
+    return sdlLoaded;
 }
 
 // Getters / Setters...
+void Game::setScreenWidth(int screenWidthInput)
+{
+    screenWidth = screenWidthInput;
+}
+
+void Game::setScreenHeight(int screenHeightInput)
+{
+    screenHeight = screenHeightInput;
+}
+
+void Game::setWindowFlags(int windowFlagsInput)
+{
+    windowFlags = windowFlagsInput;
+}
+
+int Game::getScreenWidth()
+{
+    return screenWidth;
+}
+
+int Game::getScreenHeight()
+{
+    return screenHeight;
+}
+
+int Game::getWindowFlags()
+{
+    return windowFlags;
+}
+
+bool Game::hasWindow()
+{
+    return (gameWindow != NULL);
+}
