@@ -1,30 +1,66 @@
-#include <string>
-
 // note we can use this because our linked lib directs to the right place
 #include <gtest/gtest.h>
-//#include <gmock/gmock.h>
-
+#include <gmock/gmock.h>
+#include <string>
 #include "Game.h"
 
-/*
-class MyClassMock : public MyClass
+// global vars
+bool check = false;
+void Live()
 {
-public:
+    check = true;
+}
 
-    MOCK_CONST_METHOD1( methodName, std::string( const std::string& ) );
-};
-*/
+using namespace testing;
 
-// sample test case
-TEST(MyClass, methodName_sets) 
+// mock our Game class
+class GameMock : public Game { 
+public: 
+    // method mocking can be used to to fake a method call
+    GameMock() { Live(); }
+
+    // or to trigger call expectations
+    MOCK_METHOD0(Die, void());
+    ~GameMock() { Die(); } 
+}; 
+
+// test constructor
+TEST(Game, constuctor_SetsUp) 
 {
-    std::string newStr = "hi";
-    EXPECT_TRUE(newStr == "hi");
+    GameMock *gMock = new GameMock();
+    
+    // NOTE: we can't easily expect the constructor since we pass the object,
+    // and the call happens on the object's construction... therefore we externalize
+    // the call to a local Live() function which sets check to true
+    EXPECT_TRUE(check);
+    check = false;
 
-    /*
-    MyClass mock;
-    EXPECT_CALL(mock, methodName("test")).WillOnce(Return(std::string(newStr)));
-    */
+    EXPECT_FALSE(gMock->isRunning());
+
+    // more for suppression than expectation
+    EXPECT_CALL(*gMock, Die());
+    delete gMock;
+}
+
+// test destructor
+TEST(Game, destructor_TearsDown) 
+{
+    GameMock *gMock = new GameMock();
+    EXPECT_FALSE(gMock->isRunning());
+    EXPECT_CALL(*gMock, Die());
+    delete gMock;
+}
+
+// test initializer
+TEST(Game, initGame_succeeds) 
+{
+    GameMock gMock;
+    EXPECT_FALSE(gMock.isRunning());
+    EXPECT_TRUE(gMock.initGame());
+    EXPECT_TRUE(gMock.isRunning());
+
+    // more for suppression than expectation
+    EXPECT_CALL(gMock, Die());
 }
 
 // TODO: once a few classes have been made, consider making suites
