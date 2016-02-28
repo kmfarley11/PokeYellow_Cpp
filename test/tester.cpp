@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <string>
+#include <iostream>
 #include "Game.h"
 
 // global vars
@@ -29,7 +30,7 @@ public:
 // test constructor
 TEST(Game, constuctor_SetsUp) 
 {
-    GameMock *gMock = gMock = new GameMock();
+    GameMock *gMock = new GameMock();
     
     // NOTE: we can't easily expect the constructor since we pass the object,
     // and the call happens on the object's construction... therefore we externalize

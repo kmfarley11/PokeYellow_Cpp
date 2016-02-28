@@ -13,6 +13,7 @@
 
 #include <SDL/SDL.h>
 #include <GL/glew.h>
+#include "Shader.h"
 
 class Game
 {
@@ -22,6 +23,9 @@ public:
     bool initGame();
     bool handleInput();
     bool drawScene();
+
+    void glInit(); // rename / abstract later...
+    void glDo(); // rename / abstract later...
 
     bool isRunning();
     bool sdlIsLoaded();
@@ -39,6 +43,9 @@ private:
     // utility interfacing (objects)
     SDL_Window* gameWindow;
     SDL_GLContext mainGlContext;
+    GLuint vertexBuffer;
+    GLuint vertexArray;
+    GLuint shaderProgram;
 
     // Game class interfacing
     bool running;

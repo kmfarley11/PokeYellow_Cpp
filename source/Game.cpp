@@ -21,7 +21,13 @@ Game::Game()
     running = false;
     sdlLoaded = false;
     gameWindow = NULL;
-    mainGlContext;
+
+    shaderProgram = 0;
+    vertShader = 0;
+    fragShader = 0;
+    vertexBuffer = 0;
+    vertexArray = 0;
+    mainGlContext = 0;
 
     screenWidth = SCREEN_WIDTH;
     screenHeight = SCREEN_HEIGHT;
@@ -34,8 +40,25 @@ Game::~Game()
     gameWindow = NULL;
     mainGlContext;
 
-    // clean up resources before quitting
-    SDL_GL_DeleteContext(mainGlContext);
+    // (carefully) clean up resources before quitting
+    if(shaderProgram > 0)
+        glDeleteProgram(shaderProgram);
+
+    if(vertShader > 0)
+        glDeleteShader(vertShader);
+
+    if(fragShader > 0)
+        glDeleteShader(fragShader);
+
+    if(vertexBuffer > 0)
+        glDeleteBuffers(1, &vertexBuffer);
+
+    if(vertexArray > 0)
+        glDeleteVertexArrays(1, &vertexArray);
+
+    if(mainGlContext > 0)
+        SDL_GL_DeleteContext(mainGlContext);
+
     SDL_DestroyWindow(gameWindow);
     
     // exit the window (SDL)
@@ -76,6 +99,7 @@ bool Game::initGame()
 
     // TODO: error handling for the following?...
     // initialize glew after our context is ready
+    glewExperimental = GL_TRUE;
     glewInit();
 
     // avoid flickering by allowing double buffered window
@@ -85,6 +109,10 @@ bool Game::initGame()
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     running = true;
+
+    
+    glInit(); // this'll change later
+
 
     return true;
 }
@@ -118,9 +146,11 @@ bool Game::handleInput()
 
 bool Game::drawScene()
 {
+    
     bool success = false;
     if (sdlIsLoaded())
     {
+        /*
         // Clear the screen and the depth buffer
         glClearDepth(1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -142,7 +172,9 @@ bool Game::drawScene()
         glVertex2f(500, 500);
         glEnd();
         ///////////////////////////////////////////////////////////////////
+        */
 
+        glDo();
         // swap buffers to display, since we're double buffered.
         SDL_GL_SwapWindow(gameWindow);
 
@@ -196,4 +228,50 @@ int Game::getWindowFlags()
 bool Game::hasWindow()
 {
     return (gameWindow != NULL);
+}
+
+////////////////rename / abstract later...////////////////
+void Game::glInit()
+{
+    // use vertex array
+    glGenVertexArrays(1, &vertexArray);
+    glBindVertexArray(vertexArray);
+
+    // set up a simple triangle for gl drawing using vertex buffer
+    float vertices[] = {
+        0.0f, 0.5f,     // vertex 1
+        0.5f, -0.5f,    // vertex 2
+        -0.5f, -0.5f,   // vertex 3
+    };
+    glGenBuffers(1, &vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    // GL_STATIC_DRAW: uploaded once and drawn many times (world)
+    // GL_DYNAMIC_DRAW: vertex data will change from time to time, and drawn more
+    // GL_STREAM_DRAW: vertex data will changle almost everytime drawn (user interface)
+
+    ////
+    // shader stuff... blehhhh
+    // load shaders from files and use the program we link to them...
+    shaderProgram = LoadShader("shaders/vertex_shader.txt","shaders/fragment_shader.txt");
+    glUseProgram(shaderProgram);
+    
+    // set up attributes and enable vertex array
+    GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(posAttrib);
+
+    // Clear the screen to black
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    ////
+}
+
+void Game::glDo()
+{
+    // Clear the screen to black
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 }

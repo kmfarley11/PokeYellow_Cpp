@@ -5,8 +5,11 @@ SDIR=../source/
 # targets / executables
 all: tester
 
-tester: tester.o Game.o
-	g++ -pthread -o tester tester.o libgtest.a gmock_main.a Game.o ${LDIR}/glew/libGLEW.a -lSDL2main -lSDL2 -lGLEW -lGL 
+tester: tester.o Game.o Shader.o
+	g++ -pthread -o tester tester.o Game.o Shader.o \
+	libgtest.a gmock_main.a \
+	-L ${LDIR}/glew/ ${LDIR}/glew/libGLEW.a \
+	-lSDL2main -lSDL2 -lGLEW -lGL 
 
 # build files into reusable object files
 tester.o: tester.cpp
@@ -14,6 +17,9 @@ tester.o: tester.cpp
 
 Game.o: ${SDIR}/Game.cpp
 	g++ -c -isystem ${IDIR} -isystem ${SDIR} ${SDIR}/Game.cpp -L ${LDIR}/glew/
+
+Shader.o: ${SDIR}/Shader.cpp
+	g++ -c -isystem ${IDIR} -isystem ${SDIR} ${SDIR}/Shader.cpp -L ${LDIR}/glew/
 
 # clean up object files & executables
 clean:
