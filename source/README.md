@@ -1,5 +1,5 @@
 # SOURCE: PokeYellow_Cpp
-An attempt to recreate Pokemon Yellow Version (from the ground up) via CPP, OpenGL, and SDL(2)
+An attempt to recreate Pokemon Yellow Version (from the ground up) via CPP, OpenGL, and SDL(2 + _image)
 
 The files will be briefly described below (information is currently tentative).
 

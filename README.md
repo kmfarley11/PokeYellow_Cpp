@@ -7,7 +7,7 @@ NOTE: since this is a project of significant scope being built (essentially) fro
 
 Tool Usage Plan
 ==============
-SDL
+SDL2 (and SDL2_image)
 --------------
  - Window creation / management
  - Music integration

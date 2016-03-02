@@ -7,13 +7,12 @@
  */
 
 // Use SDL for window and IO
-// use openGl (glew) for drawing / rendering
 #ifndef GAME
 #define GAME
 
-#include <SDL/SDL.h>
-#include <GL/glew.h>
-#include "GlHelper.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <string>
 
 class Game
 {
@@ -23,6 +22,8 @@ public:
     bool initGame();
     bool handleInput();
     bool drawScene();
+    SDL_Texture* loadTexture(std::string);
+    bool setupRendering();
 
     bool isRunning();
     bool sdlIsLoaded();
@@ -39,7 +40,15 @@ public:
 private:
     // utility interfacing (objects)
     SDL_Window* gameWindow;
-    GlHelper* glHelper;
+    SDL_Renderer* renderer;
+
+    // abstract this process to room class? play with tiled and see
+    SDL_Texture* background;
+    SDL_Rect backgroundPos;
+    
+    // implement these eventually
+    SDL_Texture* player;
+    SDL_Texture* enemy;
 
     // Game class interfacing
     bool running;

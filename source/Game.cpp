@@ -6,7 +6,6 @@
  *
  */
 #include <iostream>
-#include <string>
 #include "Game.h"
 
 // global vars for easy config
@@ -21,8 +20,7 @@ Game::Game()
     running = false;
     sdlLoaded = false;
     gameWindow = NULL;
-
-    glHelper = NULL;
+    background = NULL;
 
     screenWidth = SCREEN_WIDTH;
     screenHeight = SCREEN_HEIGHT;
@@ -32,18 +30,17 @@ Game::Game()
 Game::~Game()
 {
     running = false;
-    gameWindow = NULL;
 
     // (carefully) clean up resources before quitting
-    if(glHelper != NULL)
-    {
-        delete glHelper;
-        glHelper = NULL;
-    }
     if(gameWindow != NULL)
     {
         SDL_DestroyWindow(gameWindow);
         gameWindow = NULL;
+    }
+    if(background != NULL)
+    {
+        SDL_DestroyTexture(background);
+        background = NULL;
     }
     
     // exit the window (SDL)
@@ -54,12 +51,10 @@ Game::~Game()
 bool Game::initGame()
 {
     std::string genErrString = " encountered an issue: ";
-    glHelper = new GlHelper();
 
-    int returnVals = SDL_Init(SDL_INIT_EVERYTHING);
-    if (returnVals != 0)
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
-        std::cout << "SDL" << genErrString << "init failed";
+        std::cout << "SDL" << genErrString << "init failed" << std::endl;
         return false;
     }
     
@@ -71,26 +66,21 @@ bool Game::initGame()
                                   screenHeight, windowFlags);
     if (gameWindow == NULL)
     {
-        std::cout << "SDL" << genErrString << "window creation failed";
-        return false;
-    }
-  
-    // create gl context from window
-    bool contextSuccess = glHelper->generateContext(gameWindow);
-    if (!contextSuccess)
-    {
-        std::cout << "SDL GL" << genErrString << "context creation failed";
+        std::cout << "SDL" << genErrString << "window creation failed" << std::endl;
         return false;
     }
 
-    // TODO: error handling for the following?...
-    // initialize glew after our context is ready
-    glewExperimental = GL_TRUE;
-    glewInit();
+    if(!setupRendering())
+    {
+        std::cout << "SDL" << genErrString << "in render setup" << std::endl;
+        return false;
+    }
+
+    background = loadTexture("../resources/pallet_town.png");
+    // load textures for other sprites here as well...
+    // also will load objects eventually...
 
     running = true;
-    
-    glHelper->glInit();
 
     return true;
 }
@@ -102,7 +92,7 @@ bool Game::handleInput()
     {
         SDL_Event event;
         while(SDL_PollEvent(&event))
-        { 
+        {
             // the close button was pressed
             if(event.type == SDL_QUIT)
             {
@@ -124,18 +114,64 @@ bool Game::handleInput()
 
 bool Game::drawScene()
 {
-    
     bool success = false;
     if (sdlIsLoaded())
     {
-        glHelper->glDraw();
-        // swap buffers to display, since we're double buffered.
-        SDL_GL_SwapWindow(gameWindow);
+        SDL_RenderClear(renderer);
+        SDL_RenderCopy(renderer, background, NULL, &backgroundPos);
+        // can add renders for sprites here as well
+        SDL_RenderPresent(renderer);
 
         success = true;
     }
 
     return success;
+}
+
+SDL_Texture* Game::loadTexture(std::string path)
+{
+    // this will go elsewhere when we have sprites setup
+    backgroundPos.x = 0;
+    backgroundPos.y = 0;
+    backgroundPos.w = screenWidth;
+    backgroundPos.h = screenHeight;
+
+    // load image as a surface (raw pixels)
+    SDL_Surface* surface = IMG_Load(path.c_str());
+
+    // Convert it to a renderable texture
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (texture == NULL)
+    {
+        std::cout << "Failed to load texture " << path << " error : " << SDL_GetError() << std::endl;
+        return NULL;
+    }
+
+    // clean up once what we came for
+    SDL_FreeSurface(surface);
+
+    return texture;
+}
+
+bool Game::setupRendering()
+{
+    //Initialize PNG loading
+    int imgFlags = IMG_INIT_PNG;
+    if( !( IMG_Init( imgFlags ) & imgFlags ) )
+        return false;
+    
+    renderer = SDL_CreateRenderer(gameWindow, -1, 0);
+
+    if(renderer == NULL) 
+        return false;
+    
+    // Set size of renderer to the same as window
+    SDL_RenderSetLogicalSize(renderer, screenWidth, screenHeight);
+
+    // Set color of renderer to red
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+
+    return true;
 }
 
 bool Game::isRunning()
