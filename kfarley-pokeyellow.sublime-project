@@ -1,0 +1,44 @@
+{
+	"folders":
+	[
+		{
+			"path": "source",
+            "name": "Source Code",
+            "follow_symlinks": true,
+            "file_exclude_patterns": ["*.o", "*.a"]
+		},
+        {
+            "path": "test",
+            "name": "Testing Code",
+            "follow_symlinks": true,
+            "file_exclude_patterns": ["*.o", "*.a"]
+        },
+        {
+            "path": "deps",
+            "name": "Dependancies",
+            "follow_symlinks": true,
+            "folder_exclude_patterns": ["googlemock","googletest"]
+        },
+        {
+            "path": "resources",
+            "name": "Resources"
+        }
+	],
+    "settings":
+    {
+        "tab_size": 4,
+        "translate_tabs_to_spaces": true,
+        "ycmd_path": "/home/kevin/Documents/myGit/ycmd/"
+    },
+    "build_systems":
+    [
+        {
+            "name": "Build and Run Game",
+            "shell_cmd": "cd source; make clean; make; ./main; cd .."
+        },
+        {
+            "name": "Build and Run Tests",
+            "shell_cmd": "cd test; make clean; make; ./tester; cd .."
+        }
+    ]
+}
