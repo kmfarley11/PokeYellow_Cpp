@@ -5,13 +5,13 @@
 			"path": "source",
             "name": "Source Code",
             "follow_symlinks": true,
-            "file_exclude_patterns": ["*.o", "*.a"]
+            "file_exclude_patterns": ["*.o"]
 		},
         {
             "path": "test",
             "name": "Testing Code",
             "follow_symlinks": true,
-            "file_exclude_patterns": ["*.o", "*.a"]
+            "file_exclude_patterns": ["*.o"]
         },
         {
             "path": "deps",

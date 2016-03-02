@@ -7,10 +7,12 @@ Tools
 ==============
 googletest
 --------------
- - include/gtest (needed)
- - googletest    (optional)
+ - include/gtest    (needed)
+ - lib/libgtest.a   (needed)
+ - googletest       (optional)
 
  googlemock
 --------------
- - include/gmock (needed)
- - googlemock    (optional)
+ - include/gmock    (needed)
+ - lib/gmock_main.a (needed)
+ - googlemock       (optional)
