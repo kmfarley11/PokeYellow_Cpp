@@ -76,9 +76,23 @@ bool Game::initGame()
         return false;
     }
 
-    background = loadTexture("../resources/pallet_town.png");
+    background = loadTexture("../resources/pallet_town_background_tileset.png");
     // load textures for other sprites here as well...
     // also will load objects eventually...
+
+    ///////////run tmx parsing here////////////
+    //
+    // we can grab the info associated and throw it into our room objects once made
+    //
+    /*
+    couple of ideas here
+    1. just figure out / use tmxparser
+    2. home brew parser and generate room on the fly
+    3. simply load pre-arranged pngs then parse the tmx for room object info separately
+    It looks like option 3 will be the most likely course for now, but only temp. Really
+    should dig into making full use of tiled... homebrewed is eventual preference
+    */
+    ///////////run tmx parsing here////////////
 
     running = true;
 

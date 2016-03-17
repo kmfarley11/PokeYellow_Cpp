@@ -28,6 +28,21 @@ googletest
 --------------
  - This is not set in stone; however, it may be interesting to integrate unit testing with open gl etc
 
+Tiled
+--------------
+ - Obtain tile sets from http://www.spriters-resource.com/game_boy_gbc/pokeyell/sheet/8793/
+ - Use GIMP to trim for appropriate 36 x 36 px tiles
+ - Use tiled for collision tracking, tile mapping, object layering, etc.
+ - Parse the tmx generated from tiled and use info however seen fit
+
+tmxparser
+--------------
+ - Not being used yet, but potentially useful
+ - Utilize tiled to its fullest by parsing the tmx via this 3rd party lib
+ - Possibly parse home brewed later
+ - To keep simple at first just use this
+ - Follow installation instructions here: https://github.com/andrewrk/tmxparser
+
 Approach
 ==============
 Navigate to the Issues tab and select Milestones

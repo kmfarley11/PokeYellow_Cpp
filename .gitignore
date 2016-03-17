@@ -1,2 +1,5 @@
 *.sublime-workspace
 *.o
+**/main
+**/tester
+

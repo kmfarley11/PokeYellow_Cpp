@@ -14,6 +14,12 @@
 #include <SDL2/SDL_image.h>
 #include <string>
 
+/* if using tmxparser the following may be needed
+#include <tmxparser/Tmx.h>
+#include <tmxparser/TmxLayer.h>
+#include <tmxparser/TmxMap.h>
+#include <tmxparser/TmxMapTile.h>*/
+
 class Game
 {
 public:
