@@ -2,4 +2,6 @@
 *.o
 **/main
 **/tester
+**/*~
+**/main.exe
 

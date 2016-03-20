@@ -10,6 +10,10 @@
 #ifndef GAME
 #define GAME
 
+// use this macro to avoid SDL from creating its own main() override
+// (mainly just if building on a windows machine)
+#define SDL_MAIN_HANDLED 1
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <string>
