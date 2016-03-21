@@ -6,7 +6,7 @@
  *
  */
 
-// Use SDL for window and IO
+ // Use SDL for window and IO
 #ifndef GAME
 #define GAME
 
@@ -55,7 +55,7 @@ private:
     // abstract this process to room class? play with tiled and see
     SDL_Texture* background;
     SDL_Rect backgroundPos;
-    
+
     // implement these eventually
     SDL_Texture* player;
     SDL_Texture* enemy;

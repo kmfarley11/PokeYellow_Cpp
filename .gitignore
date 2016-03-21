@@ -4,4 +4,8 @@
 **/tester
 **/*~
 **/main.exe
-
+**/*.vcx*
+**/*.sln
+**/*.sdf
+**/Debug
+**/.vs

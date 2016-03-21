@@ -17,21 +17,21 @@ void Alive() { check = true; }
 using namespace testing;
 
 // mock our Game class
-class GameMock : public Game { 
-public: 
+class GameMock : public Game {
+public:
     // method mocking can be used to to fake a method call
     GameMock() { Alive(); }
 
     // or to trigger call expectations
     MOCK_METHOD0(Die, void());
-    ~GameMock() { Die(); } 
-}; 
+    ~GameMock() { Die(); }
+};
 
 // test constructor
-TEST(Game, constuctor_SetsUp) 
+TEST(Game, constuctor_SetsUp)
 {
     GameMock *gMock = new GameMock();
-    
+
     // NOTE: we can't easily expect the constructor since we pass the object,
     // and the call happens on the object's construction... therefore we externalize
     // the call to a local Live() function which sets check to true
@@ -52,14 +52,14 @@ TEST(Game, constuctor_SetsUp)
 }
 
 // test destructor
-TEST(Game, destructor_TearsDown) 
+TEST(Game, destructor_TearsDown)
 {
     GameMock *gMock = new GameMock();
     EXPECT_CALL(*gMock, Die());
     delete gMock;
 }
 
-TEST(Game, isRunning_ReportsCorrectGameStatus) 
+TEST(Game, isRunning_ReportsCorrectGameStatus)
 {
     GameMock gMock;
     EXPECT_FALSE(gMock.isRunning());
@@ -70,7 +70,7 @@ TEST(Game, isRunning_ReportsCorrectGameStatus)
     EXPECT_CALL(gMock, Die()).Times(AnyNumber());
 }
 
-TEST(Game, initGame_Succeeds) 
+TEST(Game, initGame_Succeeds)
 {
     GameMock gMock;
     EXPECT_TRUE(gMock.initGame());
@@ -82,7 +82,7 @@ TEST(Game, initGame_Succeeds)
     EXPECT_CALL(gMock, Die()).Times(AnyNumber());
 }
 
-TEST(Game, handleInput_FailsWithoutSdlInit) 
+TEST(Game, handleInput_FailsWithoutSdlInit)
 {
     GameMock gMock;
     EXPECT_FALSE(gMock.handleInput());
@@ -91,7 +91,7 @@ TEST(Game, handleInput_FailsWithoutSdlInit)
     EXPECT_CALL(gMock, Die()).Times(AnyNumber());
 }
 
-TEST(Game, handleInput_SucceedsWithSdlInit) 
+TEST(Game, handleInput_SucceedsWithSdlInit)
 {
     GameMock gMock;
     gMock.initGame();
@@ -101,7 +101,7 @@ TEST(Game, handleInput_SucceedsWithSdlInit)
     EXPECT_CALL(gMock, Die()).Times(AnyNumber());
 }
 
-TEST(Game, drawScene_FailsWithoutSdlInit) 
+TEST(Game, drawScene_FailsWithoutSdlInit)
 {
     GameMock gMock;
     EXPECT_FALSE(gMock.drawScene());
@@ -110,7 +110,7 @@ TEST(Game, drawScene_FailsWithoutSdlInit)
     EXPECT_CALL(gMock, Die()).Times(AnyNumber());
 }
 
-TEST(Game, drawScene_SucceedsWithSdlInit) 
+TEST(Game, drawScene_SucceedsWithSdlInit)
 {
     GameMock gMock;
     gMock.initGame();
@@ -122,8 +122,8 @@ TEST(Game, drawScene_SucceedsWithSdlInit)
 
 // TODO: once a few classes have been made, consider making suites
 // runs tests when running the tester executable
-int main (int argc, char ** argv) 
+int main(int argc, char ** argv)
 {
-        ::testing::InitGoogleTest(&argc, argv);
-        return RUN_ALL_TESTS();
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

@@ -1,14 +1,16 @@
 /* Author: Kevin Farley
  *
  * Name: GAME.CPP
- * Description: implementation for main game object. 
+ * Description: implementation for main game object.
  *  Utilized internally & via main loop
  *
  */
 #include <iostream>
 #include "Game.h"
 
-// global vars for easy config
+#include <fstream>
+
+ // global vars for easy config
 int SCREEN_WIDTH = 1024;
 int SCREEN_HEIGHT = 768;
 // window flags can be added via bitwise ORing
@@ -32,17 +34,17 @@ Game::~Game()
     running = false;
 
     // (carefully) clean up resources before quitting
-    if(gameWindow != NULL)
+    if (gameWindow != NULL)
     {
         SDL_DestroyWindow(gameWindow);
         gameWindow = NULL;
     }
-    if(background != NULL)
+    if (background != NULL)
     {
         SDL_DestroyTexture(background);
         background = NULL;
     }
-    
+
     // exit the window (SDL)
     SDL_Quit();
 }
@@ -57,26 +59,33 @@ bool Game::initGame()
         std::cout << "SDL" << genErrString << "init failed" << std::endl;
         return false;
     }
-    
+
     sdlLoaded = true;
-    
+
     // create window
-    gameWindow = SDL_CreateWindow("Game Window", SDL_WINDOWPOS_UNDEFINED, 
-                                  SDL_WINDOWPOS_UNDEFINED, screenWidth, 
-                                  screenHeight, windowFlags);
+    gameWindow = SDL_CreateWindow("Game Window", SDL_WINDOWPOS_UNDEFINED,
+        SDL_WINDOWPOS_UNDEFINED, screenWidth,
+        screenHeight, windowFlags);
     if (gameWindow == NULL)
     {
         std::cout << "SDL" << genErrString << "window creation failed" << std::endl;
         return false;
     }
 
-    if(!setupRendering())
+    if (!setupRendering())
     {
         std::cout << "SDL" << genErrString << "in render setup" << std::endl;
         return false;
     }
 
-    background = loadTexture("../resources/pallet_town_background_tileset.png");
+    // depending on the project run environment, load our specific image
+    // (_MSC_VER determines the visual studio version being used)
+#if _MSC_VER > 0
+    background = loadTexture("resources\\pallet_town_background_tileset.png"); // FOR WINDOWS (Visual Studio)
+#else
+    background = loadTexture("../resources/pallet_town_background_tileset.png"); // FOR LINUX / MINGW
+#endif
+
     // load textures for other sprites here as well...
     // also will load objects eventually...
 
@@ -105,14 +114,14 @@ bool Game::handleInput()
     if (sdlIsLoaded())
     {
         SDL_Event event;
-        while(SDL_PollEvent(&event))
+        while (SDL_PollEvent(&event))
         {
             // the close button was pressed
-            if(event.type == SDL_QUIT)
+            if (event.type == SDL_QUIT)
             {
                 running = false;
             }
-            if(event.type == SDL_KEYDOWN) 
+            if (event.type == SDL_KEYDOWN)
             {
                 // the “ESCAPE” key is pressed:
                 if (event.key.keysym.sym == SDLK_ESCAPE)
@@ -157,7 +166,7 @@ SDL_Texture* Game::loadTexture(std::string path)
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
     if (texture == NULL)
     {
-        std::cout << "Failed to load texture " << path << " error : " << SDL_GetError() << std::endl;
+        std::cout << "Failed to load texture " << path.c_str() << " error : " << SDL_GetError() << std::endl;
         return NULL;
     }
 
@@ -171,14 +180,14 @@ bool Game::setupRendering()
 {
     //Initialize PNG loading
     int imgFlags = IMG_INIT_PNG;
-    if( !( IMG_Init( imgFlags ) & imgFlags ) )
+    if (!(IMG_Init(imgFlags) & imgFlags))
         return false;
-    
+
     renderer = SDL_CreateRenderer(gameWindow, -1, 0);
 
-    if(renderer == NULL) 
+    if (renderer == NULL)
         return false;
-    
+
     // Set size of renderer to the same as window
     SDL_RenderSetLogicalSize(renderer, screenWidth, screenHeight);
 

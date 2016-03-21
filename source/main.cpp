@@ -14,12 +14,12 @@
 
 #include "Game.h"
 
-int main(int argc, char** args)
+int main(int argc, char* argv[])
 {
     // create our game object and have it start and init our window etc.
     Game *game = new Game();
     game->initGame();
-    while(game->isRunning())
+    while (game->isRunning())
     {
         game->handleInput();
         game->drawScene();
@@ -28,5 +28,5 @@ int main(int argc, char** args)
     // if we are done then execute teardown
     delete game;
     game = NULL;
-	return 0;
+    return 0;
 }
