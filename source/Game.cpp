@@ -10,9 +10,10 @@
 
 #include <fstream>
 
- // global vars for easy config
+// global vars for easy config
 int SCREEN_WIDTH = 1024;
 int SCREEN_HEIGHT = 768;
+
 // window flags can be added via bitwise ORing
 int FLAGS = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 
@@ -78,12 +79,30 @@ bool Game::initGame()
         return false;
     }
 
+    // factorize our images / sprites based on screen w / h vs. natural background w / h
+    // 383 and 433 are num pixels for the background's dimensions (properties)
+    xScaleFactor = screenWidth / 433;
+    yScaleFactor = screenHeight / 383;
+    
+    // init hit box(es)
+    backgroundPos.x = 0;
+    backgroundPos.y = 0;
+    backgroundPos.w = screenWidth;
+    backgroundPos.h = screenHeight;
+
+    playerPos.x = 0;
+    playerPos.y = 0;
+    playerPos.w = xScaleFactor * 16; // player sprite is 16 px * 16 px, apply scale factor
+    playerPos.h = yScaleFactor * 16;
+
     // depending on the project run environment, load our specific image
     // (_MSC_VER determines the visual studio version being used)
 #if _MSC_VER > 0
     background = loadTexture("resources\\pallet_town_background_tileset.png"); // FOR WINDOWS (Visual Studio)
+    player = loadTexture("resources\\PlayerFront.png");
 #else
     background = loadTexture("../resources/pallet_town_background_tileset.png"); // FOR LINUX / MINGW
+    player = loadTexture("../resources/PlayerFront.png");
 #endif
 
     // load textures for other sprites here as well...
@@ -102,7 +121,6 @@ bool Game::initGame()
     should dig into making full use of tiled... homebrewed is eventual preference
     */
     ///////////run tmx parsing here////////////
-
     running = true;
 
     return true;
@@ -128,6 +146,24 @@ bool Game::handleInput()
                 {
                     running = false;
                 }
+
+                // player pos updates via keyboard input (arrow keys)
+                if (event.key.keysym.sym == SDLK_LEFT)
+                {
+                    playerPos.x -= playerPos.w / 2;
+                }
+                if (event.key.keysym.sym == SDLK_RIGHT)
+                {
+                    playerPos.x += playerPos.w / 2;
+                }
+                if (event.key.keysym.sym == SDLK_UP)
+                {
+                    playerPos.y -= playerPos.h / 2;
+                }
+                if (event.key.keysym.sym == SDLK_DOWN)
+                {
+                    playerPos.y += playerPos.h / 2;
+                }
             }
             success = true;
         }
@@ -143,6 +179,7 @@ bool Game::drawScene()
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, background, NULL, &backgroundPos);
         // can add renders for sprites here as well
+        SDL_RenderCopy(renderer, player, NULL, &playerPos);
         SDL_RenderPresent(renderer);
 
         success = true;
@@ -153,12 +190,6 @@ bool Game::drawScene()
 
 SDL_Texture* Game::loadTexture(std::string path)
 {
-    // this will go elsewhere when we have sprites setup
-    backgroundPos.x = 0;
-    backgroundPos.y = 0;
-    backgroundPos.w = screenWidth;
-    backgroundPos.h = screenHeight;
-
     // load image as a surface (raw pixels)
     SDL_Surface* surface = IMG_Load(path.c_str());
 

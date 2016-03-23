@@ -58,6 +58,7 @@ private:
 
     // implement these eventually
     SDL_Texture* player;
+    SDL_Rect playerPos; // will go in separate class...
     SDL_Texture* enemy;
 
     // Game class interfacing
@@ -68,6 +69,9 @@ private:
     int screenWidth;
     int screenHeight;
     int windowFlags;
+
+    int xScaleFactor;
+    int yScaleFactor;
 };
 
 #endif
