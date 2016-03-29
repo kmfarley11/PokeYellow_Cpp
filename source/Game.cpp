@@ -24,6 +24,8 @@ Game::Game()
     sdlLoaded = false;
     gameWindow = NULL;
     background = NULL;
+    player = NULL;
+    renderer = NULL;
 
     screenWidth = SCREEN_WIDTH;
     screenHeight = SCREEN_HEIGHT;
@@ -45,6 +47,16 @@ Game::~Game()
         SDL_DestroyTexture(background);
         background = NULL;
     }
+    if (player != NULL)
+    {
+        SDL_DestroyTexture(player);
+        player = NULL;
+    }
+    if (renderer != NULL)
+    {
+        SDL_DestroyRenderer(renderer);
+        renderer = NULL;
+    }
 
     // exit the window (SDL)
     SDL_Quit();
@@ -65,8 +77,8 @@ bool Game::initGame()
 
     // create window
     gameWindow = SDL_CreateWindow("Game Window", SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED, screenWidth,
-        screenHeight, windowFlags);
+                                   SDL_WINDOWPOS_UNDEFINED, screenWidth,
+                                   screenHeight, windowFlags);
     if (gameWindow == NULL)
     {
         std::cout << "SDL" << genErrString << "window creation failed" << std::endl;
@@ -105,22 +117,18 @@ bool Game::initGame()
     player = loadTexture("../resources/PlayerFront.png");
 #endif
 
-    // load textures for other sprites here as well...
-    // also will load objects eventually...
-
-    ///////////run tmx parsing here////////////
-    //
-    // we can grab the info associated and throw it into our room objects once made
-    //
     /*
+    ///////////run tmx parsing here////////////
+    we can grab the info associated and throw it into our room objects once made
+    
     couple of ideas here
     1. just figure out / use tmxparser
     2. home brew parser and generate room on the fly
     3. simply load pre-arranged pngs then parse the tmx for room object info separately
     It looks like option 3 will be the most likely course for now, but only temp. Really
     should dig into making full use of tiled... homebrewed is eventual preference
-    */
     ///////////run tmx parsing here////////////
+    */
     running = true;
 
     return true;
@@ -192,17 +200,17 @@ SDL_Texture* Game::loadTexture(std::string path)
 {
     // load image as a surface (raw pixels)
     SDL_Surface* surface = IMG_Load(path.c_str());
+    SDL_Texture* texture = NULL;
 
-    // Convert it to a renderable texture
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    if (texture == NULL)
+    if(surface != NULL && renderer != NULL)
     {
-        std::cout << "Failed to load texture " << path.c_str() << " error : " << SDL_GetError() << std::endl;
-        return NULL;
+        // Convert it to a renderable texture then clean up surface
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
     }
 
-    // clean up once what we came for
-    SDL_FreeSurface(surface);
+    if (texture == NULL || surface == NULL)
+        std::cout << "Failed to load texture " << path.c_str() << " error : " << SDL_GetError() << std::endl;
 
     return texture;
 }
@@ -272,4 +280,9 @@ int Game::getWindowFlags()
 bool Game::hasWindow()
 {
     return (gameWindow != NULL);
+}
+
+bool Game::hasRenderer()
+{
+    return (renderer != NULL);
 }

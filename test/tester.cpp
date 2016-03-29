@@ -1,3 +1,11 @@
+/* Author: Kevin Farley
+ *
+ * Name: TESTER.CPP
+ * Description: tester file to run unit tests
+ *  For now just used for Game object verification / validation
+ *
+ */
+
 // note we can use this because our linked lib directs to the right place
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -115,6 +123,54 @@ TEST(Game, drawScene_SucceedsWithSdlInit)
     GameMock gMock;
     gMock.initGame();
     EXPECT_TRUE(gMock.drawScene());
+
+    // more for suppression than expectation
+    EXPECT_CALL(gMock, Die()).Times(AnyNumber());
+}
+
+TEST(Game, loadTexture_SucceedsWithGoodFileInput)
+{
+    GameMock gMock;
+    gMock.initGame();
+
+// depending on system being run on
+#if _MSC_VER > 0
+    // FOR WINDOWS (Visual Studio)
+    EXPECT_TRUE(gMock.loadTexture("resources\\PlayerFront.png") != NULL);
+#else
+    // FOR LINUX / MINGW
+    EXPECT_TRUE(gMock.loadTexture("../resources/PlayerFront.png") != NULL);
+#endif
+
+    // more for suppression than expectation
+    EXPECT_CALL(gMock, Die()).Times(AnyNumber());
+}
+
+TEST(Game, loadTexture_ReturnsNULLWithBadFileInput)
+{
+    GameMock gMock;
+    gMock.initGame();
+
+    EXPECT_TRUE(gMock.loadTexture("thisFileDoesntExist.png") == NULL);
+
+    // more for suppression than expectation
+    EXPECT_CALL(gMock, Die()).Times(AnyNumber());
+}
+
+TEST(Game, setupRendering_SucceedsAfterInit)
+{
+    GameMock gMock;
+    gMock.initGame();
+    EXPECT_TRUE(gMock.hasRenderer());
+
+    // more for suppression than expectation
+    EXPECT_CALL(gMock, Die()).Times(AnyNumber());
+}
+
+TEST(Game, setupRendering_FailsBeforeInit)
+{
+    GameMock gMock;
+    EXPECT_FALSE(gMock.hasRenderer());
 
     // more for suppression than expectation
     EXPECT_CALL(gMock, Die()).Times(AnyNumber());

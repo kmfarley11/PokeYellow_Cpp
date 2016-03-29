@@ -46,6 +46,7 @@ public:
     int getScreenHeight();
     int getWindowFlags();
     bool hasWindow();
+    bool hasRenderer();
 
 private:
     // utility interfacing (objects)
