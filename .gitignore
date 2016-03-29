@@ -1,0 +1,12 @@
+*.sublime-workspace
+*sublime-project
+*.o
+**/main
+**/tester
+**/*~
+**/main.exe
+**/*.vcx*
+**/*.sln
+**/*.sdf
+**/Debug
+**/.vs
