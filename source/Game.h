@@ -49,6 +49,12 @@ public:
     bool hasRenderer();
 
 private:
+    // Classes to implement
+    //Player* player;       // store user data
+    //Room* room;           // background data (also contains npc data)
+    //Enemy* enemy;         // if battling: enemy data
+    //TiledParser parser;   // parse tmx map files
+
     // utility interfacing (objects)
     SDL_Window* gameWindow;
     SDL_Renderer* renderer;

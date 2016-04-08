@@ -11,8 +11,10 @@
 #include <fstream>
 
 // global vars for easy config
-int SCREEN_WIDTH = 1024;
-int SCREEN_HEIGHT = 768;
+ // For now we need to maintain the 432*384 ratio because of scaling 
+ // this should eventually be more flexible once we involve scrolling & different rooms etc
+int SCREEN_WIDTH = 432*2; 
+int SCREEN_HEIGHT = 384*2;
 
 // window flags can be added via bitwise ORing
 int FLAGS = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
@@ -91,10 +93,15 @@ bool Game::initGame()
         return false;
     }
 
+    /*
+     *  TODO: Create Room Object, create Player Object, and load textures here
+     *  once this is done, remove the code below (before parsing)
+     */
+
     // factorize our images / sprites based on screen w / h vs. natural background w / h
     // 383 and 433 are num pixels for the background's dimensions (properties)
-    xScaleFactor = screenWidth / 433;
-    yScaleFactor = screenHeight / 383;
+    xScaleFactor = screenWidth / 432;
+    yScaleFactor = screenHeight / 384;
     
     // init hit box(es)
     backgroundPos.x = 0;
@@ -104,8 +111,8 @@ bool Game::initGame()
 
     playerPos.x = 0;
     playerPos.y = 0;
-    playerPos.w = xScaleFactor * 16; // player sprite is 16 px * 16 px, apply scale factor
-    playerPos.h = yScaleFactor * 16;
+    playerPos.w = 16 * xScaleFactor;
+    playerPos.h = 16 * yScaleFactor;
 
     // depending on the project run environment, load our specific image
     // (_MSC_VER determines the visual studio version being used)
