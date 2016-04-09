@@ -16,12 +16,20 @@
 int SCREEN_WIDTH = 432*2; 
 int SCREEN_HEIGHT = 384*2;
 
+std::string directionToAnimate; // these two should be extracted to player class once implemented
+bool movePlayer = false;
+
 // window flags can be added via bitwise ORing
 int FLAGS = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 
 // Construct / Deconstruct
 Game::Game()
 {
+    // set direction of animation to front facing, no previous state
+    directionToAnimate.push_back('d');
+    directionToAnimate.push_back('-');
+    directionToAnimate.push_back('n');
+
     running = false;
     sdlLoaded = false;
     gameWindow = NULL;
@@ -109,8 +117,8 @@ bool Game::initGame()
     backgroundPos.w = screenWidth;
     backgroundPos.h = screenHeight;
 
-    playerPos.x = 0;
-    playerPos.y = 0;
+    playerPos.x = 256;//screenWidth / 2;
+    playerPos.y = 256;//screenHeight / 2;
     playerPos.w = 16 * xScaleFactor;
     playerPos.h = 16 * yScaleFactor;
 
@@ -118,10 +126,10 @@ bool Game::initGame()
     // (_MSC_VER determines the visual studio version being used)
 #if _MSC_VER > 0
     background = loadTexture("resources\\pallet_town_background_tileset.png"); // FOR WINDOWS (Visual Studio)
-    player = loadTexture("resources\\PlayerFront.png");
+    player = loadTexture("resources\\PlayerFront0.png");
 #else
     background = loadTexture("../resources/pallet_town_background_tileset.png"); // FOR LINUX / MINGW
-    player = loadTexture("../resources/PlayerFront.png");
+    player = loadTexture("../resources/PlayerFront0.png");
 #endif
 
     /*
@@ -162,22 +170,26 @@ bool Game::handleInput()
                     running = false;
                 }
 
-                // player pos updates via keyboard input (arrow keys)
+                // player facing updates via keyboard input (arrow keys)
                 if (event.key.keysym.sym == SDLK_LEFT)
                 {
-                    playerPos.x -= playerPos.w / 2;
+                    directionToAnimate.replace(0, 1, "l");
+                    movePlayer = true;
                 }
                 if (event.key.keysym.sym == SDLK_RIGHT)
                 {
-                    playerPos.x += playerPos.w / 2;
+                    directionToAnimate.replace(0, 1, "r");
+                    movePlayer = true;
                 }
                 if (event.key.keysym.sym == SDLK_UP)
                 {
-                    playerPos.y -= playerPos.h / 2;
+                    directionToAnimate.replace(0, 1, "u");
+                    movePlayer = true;
                 }
                 if (event.key.keysym.sym == SDLK_DOWN)
                 {
-                    playerPos.y += playerPos.h / 2;
+                    directionToAnimate.replace(0, 1, "d");
+                    movePlayer = true;
                 }
             }
             success = true;
@@ -191,11 +203,30 @@ bool Game::drawScene()
     bool success = false;
     if (sdlIsLoaded())
     {
+        if (movePlayer)
+        {
+            SDL_RenderClear(renderer);
+            SDL_RenderCopy(renderer, background, NULL, &backgroundPos);
+            animatePlayer();
+            movePlayer = false;
+        }
+        
+
+        // reduce the frame rate for debugging. there should be a cap eventually...
+        SDL_Delay(200);
+
+
+        // re-render since animate player only switches player textures and renders once (2 renders needed for every loop)
+        // look into optimization here...
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, background, NULL, &backgroundPos);
-        // can add renders for sprites here as well
         SDL_RenderCopy(renderer, player, NULL, &playerPos);
         SDL_RenderPresent(renderer);
+
+
+        // reduce the frame rate for debugging. there should be a cap eventually...
+        SDL_Delay(200);
+
 
         success = true;
     }
@@ -292,4 +323,62 @@ bool Game::hasWindow()
 bool Game::hasRenderer()
 {
     return (renderer != NULL);
+}
+
+void Game::animatePlayer()
+{
+    std::string imgToUse = "...";
+    std::string navSlash = "../resources/";
+    bool abort = false;
+
+#if _MSC_VER > 0
+    navSlash = "resources\\"; // FOR WINDOWS (Visual Studio)
+#endif
+
+    switch (directionToAnimate[0])
+    {
+    case 'u' :
+        imgToUse = "PlayerBack0";
+        break;
+    case 'd':
+        imgToUse = "PlayerFront0";
+        break;
+    case 'l' :
+        imgToUse = "PlayerLeft0";
+        break;
+    case 'r' :
+        imgToUse = "PlayerRight0";
+        break;
+    default :
+        break;
+    }
+
+    // decide which foot moves first based on what the previous step was
+    // TODO: implement enum on player instead of string parsing...
+    if (directionToAnimate[2] == 'r')
+    {
+        directionToAnimate.replace(2, 1, "l");
+        imgToUse.replace(imgToUse.length() - 1, 1, "1");
+    }
+    else
+    {
+        directionToAnimate.replace(2, 1, "r");
+        imgToUse.replace(imgToUse.length() - 1, 1, "2");
+    }
+
+    player = loadTexture(navSlash + imgToUse + ".png");
+    
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, background, NULL, &backgroundPos);
+    SDL_RenderCopy(renderer, player, NULL, &playerPos);
+    SDL_RenderPresent(renderer);
+
+    if (player != NULL)
+    {
+        SDL_DestroyTexture(player);
+        player = NULL;
+    }
+
+    imgToUse.replace(imgToUse.length() - 1, 1, "0");
+    player = loadTexture(navSlash + imgToUse + ".png");
 }

@@ -48,6 +48,10 @@ public:
     bool hasWindow();
     bool hasRenderer();
 
+
+    void animatePlayer();
+
+
 private:
     // Classes to implement
     //Player* player;       // store user data

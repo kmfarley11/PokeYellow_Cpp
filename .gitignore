@@ -9,4 +9,5 @@
 **/*.sln
 **/*.sdf
 **/Debug
-**/.vs
+**/*.vs
+**/*.opendb
