@@ -4,6 +4,7 @@
 **/main
 **/tester
 **/*~
+**/*.swp
 **/main.exe
 **/*.vcx*
 **/*.sln

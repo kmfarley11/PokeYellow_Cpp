@@ -14,5 +14,11 @@ main.o: main.cpp
 Game.o: Game.cpp
 	g++ -c Game.cpp -isystem ${IDIR}
 
+#Player.o: Player.cpp
+#	g++ -c Player.cpp -isystem ${IDIR}
+
+#Room.o: Room.cpp
+#	g++ -c Room.cpp -isystem ${IDIR}
+
 clean:
 	rm -f main *.o *.exe *.gch
