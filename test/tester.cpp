@@ -15,8 +15,8 @@
 
 // global vars
 bool check = false;
-int mock_SCREEN_WIDTH = 1024;
-int mock_SCREEN_HEIGHT = 768;
+extern int SCREEN_WIDTH;
+extern int SCREEN_HEIGHT;
 int mock_FLAGS = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 
 // man handling test stuff (hacky)
@@ -50,8 +50,8 @@ TEST(Game, constuctor_SetsUp)
     EXPECT_FALSE(gMock->sdlIsLoaded());
     EXPECT_FALSE(gMock->hasWindow());
 
-    EXPECT_TRUE(gMock->getScreenWidth() == mock_SCREEN_WIDTH);
-    EXPECT_TRUE(gMock->getScreenHeight() == mock_SCREEN_HEIGHT);
+    EXPECT_TRUE(gMock->getScreenWidth() == SCREEN_WIDTH);
+    EXPECT_TRUE(gMock->getScreenHeight() == SCREEN_HEIGHT);
     EXPECT_TRUE(gMock->getWindowFlags() == mock_FLAGS);
 
     // more for suppression than expectation
@@ -136,10 +136,10 @@ TEST(Game, loadTexture_SucceedsWithGoodFileInput)
 // depending on system being run on
 #if _MSC_VER > 0
     // FOR WINDOWS (Visual Studio)
-    EXPECT_TRUE(gMock.loadTexture("resources\\PlayerFront.png") != NULL);
+    EXPECT_TRUE(gMock.loadTexture("resources\\PlayerFront0.png") != NULL);
 #else
     // FOR LINUX / MINGW
-    EXPECT_TRUE(gMock.loadTexture("../resources/PlayerFront.png") != NULL);
+    EXPECT_TRUE(gMock.loadTexture("../resources/PlayerFront0.png") != NULL);
 #endif
 
     // more for suppression than expectation
