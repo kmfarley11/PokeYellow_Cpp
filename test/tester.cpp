@@ -128,6 +128,8 @@ TEST(Game, drawScene_SucceedsWithSdlInit)
     EXPECT_CALL(gMock, Die()).Times(AnyNumber());
 }
 
+/* should go in gameobject tester
+
 TEST(Game, loadTexture_SucceedsWithGoodFileInput)
 {
     GameMock gMock;
@@ -155,7 +157,7 @@ TEST(Game, loadTexture_ReturnsNULLWithBadFileInput)
 
     // more for suppression than expectation
     EXPECT_CALL(gMock, Die()).Times(AnyNumber());
-}
+}*/
 
 TEST(Game, setupRendering_SucceedsAfterInit)
 {

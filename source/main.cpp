@@ -4,11 +4,10 @@
  *
  * DESCRIPTION
  *  based on tutorials found online
- *  uses openGL (SDL) in c++ to create a windowed graphical application
- *  GLEW is used to make openGL usable for modern syle apps
+ *  uses openGL (SDL2) in c++ to create a windowed graphical application
  *
  * NOTES
- *  SDL, OpenGl, and Glew are used to appropriately build this project
+ *  SDL2, and SDL2_Image are used to appropriately build this project
  *  the coder will need to install the appropriate packages accordingly
  */
 

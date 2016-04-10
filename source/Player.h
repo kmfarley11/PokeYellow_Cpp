@@ -1,24 +1,33 @@
+/* Author: Kevin Farley
+*
+* Name: PLAYER.CPP
+* Description: header for player object.
+*  Will handle player info, animation, and texture loading
+*
+*/
+
 #ifndef PLAYER
 #define PLAYER
 
 #include <string>
+#include "GameObject.h"
 
-class Player 
+class Player : public GameObject
 {
 public:
     Player();
     ~Player();
     
-    void animatePlayer();
-    void loadPlayer();
+    void togglePlayerAnimation(SDL_Renderer* renderer);
+    void setDirection(std::string direction);
+    bool shouldMove();
     
 private:
     std::string playerInfo;
-    //SDL_Texture playerTexture;
-    //SDL_Rect playerBox;
+    std::string directionToAnimate;
+    bool movePlayer;
     //List<Pokemon> pkmn;
-
 };
 
-
 #endif
+

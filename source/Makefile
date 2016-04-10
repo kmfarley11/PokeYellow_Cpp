@@ -4,8 +4,8 @@ LDIR=../deps/lib
 # targets/ executables
 all: main
 
-main: main.o Game.o
-	g++ -o main main.o Game.o \
+main: main.o Game.o GameObject.o Room.o Player.o
+	g++ -o main main.o Game.o GameObject.o Room.o Player.o \
 	-lSDL2main -lSDL2 -lSDL2_image
 
 main.o: main.cpp
@@ -14,11 +14,14 @@ main.o: main.cpp
 Game.o: Game.cpp
 	g++ -c Game.cpp -isystem ${IDIR}
 
-#Player.o: Player.cpp
-#	g++ -c Player.cpp -isystem ${IDIR}
+GameObject.o: GameObject.cpp
+	g++ -c GameObject.cpp -isystem ${IDIR}
 
-#Room.o: Room.cpp
-#	g++ -c Room.cpp -isystem ${IDIR}
+Player.o: Player.cpp
+	g++ -c Player.cpp -isystem ${IDIR}
+
+Room.o: Room.cpp
+	g++ -c Room.cpp -isystem ${IDIR}
 
 clean:
 	rm -f main *.o *.exe *.gch

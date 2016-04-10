@@ -7,16 +7,27 @@
  */
 
  // Use SDL for window and IO
-#ifndef GAME
-#define GAME
+#ifndef SDL2_DEPS
+#define SDL2_DEPS
 
-// use this macro to avoid SDL from creating its own main() override
-// (mainly just if building on a windows machine)
+ // use this macro to avoid SDL from creating its own main() override
 #define SDL_MAIN_HANDLED 1
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+
+#endif
+
+// handle sdl dependancy (above) better...
+
+#ifndef GAME
+#define GAME
+
 #include <string>
+#include <iostream>
+
+#include "Player.h"
+#include "Room.h"
 
 /* if using tmxparser the following may be needed
 #include <tmxparser/Tmx.h>
@@ -32,7 +43,6 @@ public:
     bool initGame();
     bool handleInput();
     bool drawScene();
-    SDL_Texture* loadTexture(std::string);
     bool setupRendering();
 
     bool isRunning();
@@ -48,29 +58,17 @@ public:
     bool hasWindow();
     bool hasRenderer();
 
-
-    void animatePlayer();
-
-
 private:
+    Player player;        // store user data
+    Room room;            // background data (also contains npc data)
+
     // Classes to implement
-    //Player* player;       // store user data
-    //Room* room;           // background data (also contains npc data)
     //Enemy* enemy;         // if battling: enemy data
     //TiledParser parser;   // parse tmx map files
 
     // utility interfacing (objects)
     SDL_Window* gameWindow;
     SDL_Renderer* renderer;
-
-    // abstract this process to room class? play with tiled and see
-    SDL_Texture* background;
-    SDL_Rect backgroundPos;
-
-    // implement these eventually
-    SDL_Texture* player;
-    SDL_Rect playerPos; // will go in separate class...
-    SDL_Texture* enemy;
 
     // Game class interfacing
     bool running;
