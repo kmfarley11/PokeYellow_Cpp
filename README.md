@@ -16,8 +16,8 @@ SDL2 (and SDL2_image)
  - Controller interface
  - Basic image / sprite loading
  - Download and install both: 
-    - [SDL2|https://www.libsdl.org/download-2.0.php#source] (package libsdl2-dev for linux)
-    - [SDL2_Image|https://www.libsdl.org/projects/SDL_image/] (package libsdl2-image-dev for linux)
+    - [SDL2](https://www.libsdl.org/download-2.0.php#source) (package libsdl2-dev for linux)
+    - [SDL2_Image](https://www.libsdl.org/projects/SDL_image/) (package libsdl2-image-dev for linux)
   
 OpenGL
 --------------
