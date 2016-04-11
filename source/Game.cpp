@@ -9,11 +9,11 @@
 
 #include <fstream>
 
-// global vars for easy config
- // For now we need to maintain the 432*384 ratio because of scaling 
- // this should eventually be more flexible once we involve scrolling & different rooms etc
-int SCREEN_WIDTH = 432*2; 
-int SCREEN_HEIGHT = 384*2;
+ // global vars for easy config
+  // For now we need to maintain the 432*384 ratio because of scaling 
+  // this should eventually be more flexible once we involve scrolling & different rooms etc
+int SCREEN_WIDTH = 432;
+int SCREEN_HEIGHT = 384;
 
 // window flags can be added via bitwise ORing
 int FLAGS = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
@@ -68,8 +68,8 @@ bool Game::initGame()
 
     // create window
     gameWindow = SDL_CreateWindow("Game Window", SDL_WINDOWPOS_UNDEFINED,
-                                   SDL_WINDOWPOS_UNDEFINED, screenWidth,
-                                   screenHeight, windowFlags);
+        SDL_WINDOWPOS_UNDEFINED, screenWidth,
+        screenHeight, windowFlags);
     if (gameWindow == NULL)
     {
         std::cout << "SDL" << genErrString << "window creation failed" << std::endl;
@@ -84,12 +84,15 @@ bool Game::initGame()
 
     // factorize our images / sprites based on screen w / h vs. natural background w / h
     // 383 and 433 are num pixels for the background's dimensions (properties)
-    xScaleFactor = screenWidth / 432;
-    yScaleFactor = screenHeight / 384;
-    
+    int roomSizeX = screenWidth * 2;
+    int roomSizeY = screenHeight * 2;
+    xScaled = roomSizeX / 432 * 16;
+    yScaled = roomSizeY / 384 * 16;
+
     // init hit box(es)
-    room.box(0, 0, screenWidth, screenHeight);
-    player.box(256, 256, 16 * xScaleFactor, 16 * yScaleFactor); // 256 is an arbitrary px location on the map chosen for debugging
+    //room.box(0, 0, screenWidth, screenHeight);
+    room.box(0, 0, roomSizeX, roomSizeY);
+    player.box(256, 256, xScaled, yScaled); // 256 is an arbitrary px location on the map chosen for debugging
 
     // depending on the project run environment, load our specific image
     // (_MSC_VER determines the visual studio version being used)
@@ -104,7 +107,7 @@ bool Game::initGame()
     /*
     ///////////run tmx parsing here////////////
     we can grab the info associated and throw it into our room objects once made
-    
+
     couple of ideas here
     1. just figure out / use tmxparser
     2. home brew parser and generate room on the fly
@@ -140,23 +143,32 @@ bool Game::handleInput()
                 }
 
                 // player facing updates via keyboard input (arrow keys)
+                // map scrolls according to direction + collision processing + window / sprite scaling
+                //  TODO: implement collision detection and abstract to the room class
                 std::string direction = "n";
+                const SDL_Rect roomBox = *room.box();
+
                 if (event.key.keysym.sym == SDLK_LEFT)
                 {
                     direction = "l";
+                    room.box(roomBox.x + xScaled / 2, roomBox.y, roomBox.w, roomBox.h);
                 }
                 if (event.key.keysym.sym == SDLK_RIGHT)
                 {
                     direction = "r";
+                    room.box(roomBox.x - xScaled / 2, roomBox.y, roomBox.w, roomBox.h);
                 }
                 if (event.key.keysym.sym == SDLK_UP)
                 {
                     direction = "u";
+                    room.box(roomBox.x, roomBox.y + yScaled / 2, roomBox.w, roomBox.h);
                 }
                 if (event.key.keysym.sym == SDLK_DOWN)
                 {
                     direction = "d";
+                    room.box(roomBox.x, roomBox.y - yScaled / 2, roomBox.w, roomBox.h);
                 }
+                
                 player.setDirection(direction);
             }
             success = true;
@@ -170,35 +182,21 @@ bool Game::drawScene()
     bool success = false;
     if (sdlIsLoaded())
     {
-        if (player.shouldMove())
+        SDL_RenderClear(renderer);
+        SDL_RenderCopy(renderer, room.texture(), NULL, room.box());
+
+        if (player.shouldMove() || player.forceAnimation)
         {
             // animation requires multiple renders (2 renders needed for every loop)
             // look into optimization here...
-            SDL_RenderClear(renderer);
-            SDL_RenderCopy(renderer, room.texture(), NULL, room.box());
-            
-            player.togglePlayerAnimation(renderer);
-            
-            SDL_RenderCopy(renderer, player.texture(), NULL, player.box());
-            SDL_RenderPresent(renderer);
-
             player.togglePlayerAnimation(renderer);
         }
-        
 
-        // reduce the frame rate for debugging. there should be a cap eventually...
-        SDL_Delay(200);
-
-
-        SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, room.texture(), NULL, room.box());
         SDL_RenderCopy(renderer, player.texture(), NULL, player.box());
         SDL_RenderPresent(renderer);
 
-
         // reduce the frame rate for debugging. there should be a cap eventually...
-        SDL_Delay(200);
-
+        SDL_Delay(150);
 
         success = true;
     }

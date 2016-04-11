@@ -21,6 +21,7 @@ public:
     void togglePlayerAnimation(SDL_Renderer* renderer);
     void setDirection(std::string direction);
     bool shouldMove();
+    bool forceAnimation;
     
 private:
     std::string playerInfo;

@@ -17,6 +17,7 @@ Player::Player()
     directionToAnimate.push_back('n');
 
     movePlayer = false;
+    forceAnimation = false;
 
     objectDescription = "player game object handles player animation and texture loading";
 }
@@ -29,7 +30,7 @@ Player::~Player()
 void Player::setDirection(std::string direction)
 {
     // Note: direction is a char cardinal indicator for now, this should be an enum eventually (would be cleaner)
-    if (direction.compare("n") != 0)
+    if (direction.compare("n") != 0 && !forceAnimation)
     {
         directionToAnimate.replace(0, 1, direction);
         movePlayer = true;
@@ -82,7 +83,7 @@ void Player::togglePlayerAnimation(SDL_Renderer* renderer)
     }
 
     // decide which foot moves first based on what the previous step was
-    if (movePlayer)
+    if (movePlayer && !forceAnimation)
     {
         if (directionToAnimate[2] == 'r')
         {
@@ -97,6 +98,8 @@ void Player::togglePlayerAnimation(SDL_Renderer* renderer)
     }
     
     loadTexture(navSlash + imgToUse + ".png", renderer);
+    
+    forceAnimation = !forceAnimation; // every other time we need to force the middle position
     
     movePlayer = false;
 }

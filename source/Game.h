@@ -79,8 +79,8 @@ private:
     int screenHeight;
     int windowFlags;
 
-    int xScaleFactor;
-    int yScaleFactor;
+    int xScaled;
+    int yScaled;
 };
 
 #endif
