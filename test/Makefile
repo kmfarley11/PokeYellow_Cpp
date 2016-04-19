@@ -5,7 +5,8 @@ SDIR=../source/
 CXX = g++
 CXXFLAGS = -pthread
 INCS = -isystem ${IDIR} -isystem ${SDIR}
-OBJS = tester.o GameTester.o Game.o GameObject.o Player.o Room.o
+OBJS = 	tester.o GameTester.o GameObjectTester.o PlayerTester.o RoomTester.o \
+		Game.o GameObject.o Player.o Room.o
 TARGETFLAGS = ${LDIR}/libgtest.a ${LDIR}/gmock_main.a \
 				-lSDL2main -lSDL2 -lSDL2_image
 
@@ -21,6 +22,15 @@ tester.o: tester.cpp
 
 GameTester.o: GameTester.cpp
 	$(CXX) $(CXXFLAGS) -c $(INCS) GameTester.cpp 
+
+GameObjectTester.o: GameObjectTester.cpp
+	$(CXX) $(CXXFLAGS) -c $(INCS) GameObjectTester.cpp 
+
+PlayerTester.o: PlayerTester.cpp
+	$(CXX) $(CXXFLAGS) -c $(INCS) PlayerTester.cpp
+
+RoomTester.o: RoomTester.cpp
+	$(CXX) $(CXXFLAGS) -c $(INCS) RoomTester.cpp
 
 Game.o: ${SDIR}/Game.cpp
 	$(CXX) $(CXXFLAGS) -c $(INCS) ${SDIR}Game.cpp

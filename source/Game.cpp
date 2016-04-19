@@ -9,9 +9,9 @@
 
 #include <fstream>
 
- // global vars for easy config
-  // For now we need to maintain the 432*384 ratio because of scaling 
-  // this should eventually be more flexible once we involve scrolling & different rooms etc
+// global vars for easy config
+// For now we need to maintain the 432*384 ratio because of scaling 
+// this should eventually be more flexible once we involve scrolling & different rooms etc
 int SCREEN_WIDTH = 432;
 int SCREEN_HEIGHT = 384;
 

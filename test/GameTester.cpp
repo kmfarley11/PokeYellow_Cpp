@@ -11,25 +11,36 @@
 #include "Game.h"
 
 // global vars
-bool check = false;
 extern int SCREEN_WIDTH;
 extern int SCREEN_HEIGHT;
 int mock_FLAGS = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 
-// man handling test stuff (hacky)
-void Alive() { check = true; }
-
 using namespace testing;
 
 // mock our Game class
-class GameMock : public Game {
+class GameMock : public Game 
+{
 public:
+    bool isAlive;
+
     // method mocking can be used to to fake a method call
-    GameMock() { Alive(); }
+    void Alive() 
+    { 
+        isAlive = true; 
+    }
+    
+    GameMock() 
+    { 
+        Alive(); 
+    }
 
     // or to trigger call expectations
     MOCK_METHOD0(Die, void());
-    ~GameMock() { Die(); }
+    
+    ~GameMock() 
+    { 
+        Die(); 
+    }
 };
 
 // test constructor
@@ -40,8 +51,7 @@ TEST(Game, constuctor_SetsUp)
     // NOTE: we can't easily expect the constructor since we pass the object,
     // and the call happens on the object's construction... therefore we externalize
     // the call to a local Live() function which sets check to true
-    EXPECT_TRUE(check);
-    check = false;
+    EXPECT_TRUE(gMock->isAlive);
 
     EXPECT_FALSE(gMock->isRunning());
     EXPECT_FALSE(gMock->sdlIsLoaded());
@@ -174,5 +184,3 @@ TEST(Game, setupRendering_FailsBeforeInit)
     // more for suppression than expectation
     EXPECT_CALL(gMock, Die()).Times(AnyNumber());
 }
-
-// NOTE this shares a main() with tester.cpp and thus when RunAllTests is invoked all tests here will run
