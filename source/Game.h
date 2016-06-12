@@ -43,6 +43,7 @@ public:
     bool initGame();
     bool handleInput();
     bool drawScene();
+    bool animateScene();
     bool setupRendering();
 
     bool isRunning();

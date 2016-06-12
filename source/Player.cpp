@@ -49,57 +49,60 @@ bool Player::shouldMove()
 // toggle player textures for animation purposes
 void Player::togglePlayerAnimation(SDL_Renderer* renderer)
 {
-    std::string imgToUse = "...";
-    std::string navSlash = "../resources/";
+    if (shouldMove() || forceAnimation)
+    {
+        std::string imgToUse = "...";
+        std::string navSlash = "../resources/";
 
 #if _MSC_VER > 0
-    navSlash = "resources\\"; // FOR WINDOWS (Visual Studio)
+        navSlash = "resources\\"; // FOR WINDOWS (Visual Studio)
 #endif
 
-    switch (directionToAnimate[0])
-    {
-    case 'u':
-        imgToUse = "PlayerBack0";
-        break;
-    case 'd':
-        imgToUse = "PlayerFront0";
-        break;
-    case 'l':
-        imgToUse = "PlayerLeft0";
-        break;
-    case 'r':
-        imgToUse = "PlayerRight0";
-        break;
-    default:
-        imgToUse = "PlayerFront0";
-        break;
-    }
-
-    // clean up outdated texture before loading a new one
-    if (texture() != NULL)
-    {
-        SDL_DestroyTexture(texture());
-        texture(NULL);
-    }
-
-    // decide which foot moves first based on what the previous step was
-    if (movePlayer && !forceAnimation)
-    {
-        if (directionToAnimate[2] == 'r')
+        switch (directionToAnimate[0])
         {
-            directionToAnimate.replace(2, 1, "l");
-            imgToUse.replace(imgToUse.length() - 1, 1, "1");
+        case 'u':
+            imgToUse = "PlayerBack0";
+            break;
+        case 'd':
+            imgToUse = "PlayerFront0";
+            break;
+        case 'l':
+            imgToUse = "PlayerLeft0";
+            break;
+        case 'r':
+            imgToUse = "PlayerRight0";
+            break;
+        default:
+            imgToUse = "PlayerFront0";
+            break;
         }
-        else
+
+        // clean up outdated texture before loading a new one
+        if (texture() != NULL)
         {
-            directionToAnimate.replace(2, 1, "r");
-            imgToUse.replace(imgToUse.length() - 1, 1, "2");
+            SDL_DestroyTexture(texture());
+            texture(NULL);
         }
+
+        // decide which foot moves first based on what the previous step was
+        if (movePlayer && !forceAnimation)
+        {
+            if (directionToAnimate[2] == 'r')
+            {
+                directionToAnimate.replace(2, 1, "l");
+                imgToUse.replace(imgToUse.length() - 1, 1, "1");
+            }
+            else
+            {
+                directionToAnimate.replace(2, 1, "r");
+                imgToUse.replace(imgToUse.length() - 1, 1, "2");
+            }
+        }
+
+        loadTexture(navSlash + imgToUse + ".png", renderer);
+
+        forceAnimation = !forceAnimation; // every other time we need to force the middle position
+
+        movePlayer = false;
     }
-    
-    loadTexture(navSlash + imgToUse + ".png", renderer);
-    
-    forceAnimation = !forceAnimation; // every other time we need to force the middle position
-    
-    movePlayer = false;
 }

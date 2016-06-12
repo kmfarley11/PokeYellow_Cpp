@@ -10,11 +10,12 @@
 #include <fstream>
 #include <ctime>
 
-// global vars for easy config
-// For now we need to maintain the 432*384 ratio because of scaling 
-// this should eventually be more flexible once we involve scrolling & different rooms etc
+ // global vars for easy config
+ // For now we need to maintain the 432*384 ratio because of scaling 
+ // this should eventually be more flexible once we involve scrolling & different rooms etc
 int SCREEN_WIDTH = 432;
 int SCREEN_HEIGHT = 384;
+int DESIRED_FPS = 7;
 
 // window flags can be added via bitwise ORing
 int FLAGS = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
@@ -87,8 +88,8 @@ bool Game::initGame()
     // 383 and 433 are num pixels for the background's dimensions (properties)
     int roomSizeX = screenWidth * 2;
     int roomSizeY = screenHeight * 2;
-    xScaled = roomSizeX / 432 * 16;
-    yScaled = roomSizeY / 384 * 16;
+    xScaled = roomSizeX / screenWidth * 16;
+    yScaled = roomSizeY / screenHeight * 16;
 
     // init hit box(es)
     //room.box(0, 0, screenWidth, screenHeight);
@@ -146,35 +147,40 @@ bool Game::handleInput()
             }
         }
 
-        // player facing updates via keyboard input (arrow keys)
+        // player image (direction) updates via keyboard input (arrow keys)
         // map scrolls according to direction + collision processing + window / sprite scaling
-        //  TODO: implement collision detection and abstract to the room class
         std::string direction = "n";
         const SDL_Rect roomBox = *room.box();
+        int amountToScroll = 0;
 
         // continuous-response keys (scan keyboard snapshot)
         const Uint8* keystate = SDL_GetKeyboardState(NULL);
         if (keystate[SDL_SCANCODE_LEFT])
         {
             direction = "l";
-            room.box(roomBox.x + xScaled / 2, roomBox.y, roomBox.w, roomBox.h);
+            amountToScroll = xScaled;
         }
-        if (keystate[SDL_SCANCODE_RIGHT])
+        else if (keystate[SDL_SCANCODE_RIGHT])
         {
             direction = "r";
-            room.box(roomBox.x - xScaled / 2, roomBox.y, roomBox.w, roomBox.h);
+            amountToScroll = xScaled;
         }
-        if (keystate[SDL_SCANCODE_UP])
+        else if (keystate[SDL_SCANCODE_UP])
         {
             direction = "u";
-            room.box(roomBox.x, roomBox.y + yScaled / 2, roomBox.w, roomBox.h);
+            amountToScroll = yScaled;
         }
-        if (keystate[SDL_SCANCODE_DOWN])
+        else if (keystate[SDL_SCANCODE_DOWN])
         {
             direction = "d";
-            room.box(roomBox.x, roomBox.y - yScaled / 2, roomBox.w, roomBox.h);
+            amountToScroll = yScaled;
         }
 
+        //  TODO: implement collision detection
+        //if (room.collisionCheck(x,y))
+        //{
+        room.SetBoxScrolling(direction[0], amountToScroll);
+        //}
         player.setDirection(direction);
 
         success = true;
@@ -188,34 +194,54 @@ bool Game::drawScene()
     bool success = false;
     if (sdlIsLoaded())
     {
+        // render the already-loaded textures
+        SDL_RenderClear(renderer);
+        SDL_RenderCopy(renderer, room.texture(), NULL, room.box());
+        SDL_RenderCopy(renderer, player.texture(), NULL, player.box());
+        SDL_RenderPresent(renderer);
+        success = true;
+    }
+
+    return success;
+}
+
+bool Game::animateScene()
+{
+    bool success = false;
+    if (sdlIsLoaded())
+    {
         // keep track of start and end time to smooth out fps
         clock_t startRender;
         clock_t endRender;
         startRender = clock();
+                
+        // TODO: implement different scene / animation types: if (animationtype == mapscrolling)...
+        // first render all, and start the animation
+        player.togglePlayerAnimation(renderer);
+        drawScene();
 
-        // render the room first
-        SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, room.texture(), NULL, room.box());
-
-        if (player.shouldMove() || player.forceAnimation)
+        // for smooth scrolling, incrementally render the scroll and toggle the player halfway through
+        while (room.ScrollBox())
         {
-            // animation requires multiple renders (2 renders needed for every loop)
-            // look into optimization here...
-            player.togglePlayerAnimation(renderer);
-        }
+            if (room.AtScrollHalfwayMark())
+            {
+                player.togglePlayerAnimation(renderer);
+            }
+            drawScene();
 
-        // then render the player
-        SDL_RenderCopy(renderer, player.texture(), NULL, player.box());
-        SDL_RenderPresent(renderer);
+            // 1000 / FPS = ms needed for full animation to take: divide by num of iterations used in this loop to smooth the scrolling
+            SDL_Delay((1000/DESIRED_FPS) / room.FullAmountToScroll());
+        }
 
         endRender = clock();
         clock_t delta = endRender - startRender;
-        int deltaMilli = (delta / CLOCKS_PER_SEC) * 1000;
+        int deltaMilli = (int)(((double)delta / (double)CLOCKS_PER_SEC) * (double)1000);
 
-        //std::cout << "delta = " << delta << " ticks (" << deltaMilli << " milliseconds)" << std::endl;
+        //std::cout << "delta = " << delta << " ticks (" << delta << "/" << CLOCKS_PER_SEC << " = " << deltaMilli << " milliseconds)" << std::endl;
 
-        // reduce the frame rate for debugging. there should be a cap eventually...
-        SDL_Delay(150 - deltaMilli); //1000/30 = 30 fps...
+        // ensure / enforce our designed fps
+        if (deltaMilli < (1000 / DESIRED_FPS))
+            SDL_Delay(1000 / DESIRED_FPS - deltaMilli);
 
         success = true;
     }

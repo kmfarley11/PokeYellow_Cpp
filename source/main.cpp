@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
     while (game.isRunning())
     {
         game.handleInput();
-        game.drawScene();
+        game.animateScene();
     }
 
     // if we are done then execute teardown
