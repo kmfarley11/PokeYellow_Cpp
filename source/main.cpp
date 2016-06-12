@@ -16,16 +16,14 @@
 int main(int argc, char* argv[])
 {
     // create our game object and have it start and init our window etc.
-    Game *game = new Game();
-    game->initGame();
-    while (game->isRunning())
+    Game game;
+    game.initGame();
+    while (game.isRunning())
     {
-        game->handleInput();
-        game->drawScene();
+        game.handleInput();
+        game.drawScene();
     }
 
     // if we are done then execute teardown
-    delete game;
-    game = NULL;
     return 0;
 }

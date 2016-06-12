@@ -8,6 +8,7 @@
 #include "Game.h"
 
 #include <fstream>
+#include <ctime>
 
 // global vars for easy config
 // For now we need to maintain the 432*384 ratio because of scaling 
@@ -126,6 +127,7 @@ bool Game::handleInput()
     bool success = false;
     if (sdlIsLoaded())
     {
+        // Poll events for single-hit keys, mouse events, window events, etc... (continuous key presses are utilized in a different fashion)
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {
@@ -141,39 +143,43 @@ bool Game::handleInput()
                 {
                     running = false;
                 }
-
-                // player facing updates via keyboard input (arrow keys)
-                // map scrolls according to direction + collision processing + window / sprite scaling
-                //  TODO: implement collision detection and abstract to the room class
-                std::string direction = "n";
-                const SDL_Rect roomBox = *room.box();
-
-                if (event.key.keysym.sym == SDLK_LEFT)
-                {
-                    direction = "l";
-                    room.box(roomBox.x + xScaled / 2, roomBox.y, roomBox.w, roomBox.h);
-                }
-                if (event.key.keysym.sym == SDLK_RIGHT)
-                {
-                    direction = "r";
-                    room.box(roomBox.x - xScaled / 2, roomBox.y, roomBox.w, roomBox.h);
-                }
-                if (event.key.keysym.sym == SDLK_UP)
-                {
-                    direction = "u";
-                    room.box(roomBox.x, roomBox.y + yScaled / 2, roomBox.w, roomBox.h);
-                }
-                if (event.key.keysym.sym == SDLK_DOWN)
-                {
-                    direction = "d";
-                    room.box(roomBox.x, roomBox.y - yScaled / 2, roomBox.w, roomBox.h);
-                }
-                
-                player.setDirection(direction);
             }
-            success = true;
         }
+
+        // player facing updates via keyboard input (arrow keys)
+        // map scrolls according to direction + collision processing + window / sprite scaling
+        //  TODO: implement collision detection and abstract to the room class
+        std::string direction = "n";
+        const SDL_Rect roomBox = *room.box();
+
+        // continuous-response keys (scan keyboard snapshot)
+        const Uint8* keystate = SDL_GetKeyboardState(NULL);
+        if (keystate[SDL_SCANCODE_LEFT])
+        {
+            direction = "l";
+            room.box(roomBox.x + xScaled / 2, roomBox.y, roomBox.w, roomBox.h);
+        }
+        if (keystate[SDL_SCANCODE_RIGHT])
+        {
+            direction = "r";
+            room.box(roomBox.x - xScaled / 2, roomBox.y, roomBox.w, roomBox.h);
+        }
+        if (keystate[SDL_SCANCODE_UP])
+        {
+            direction = "u";
+            room.box(roomBox.x, roomBox.y + yScaled / 2, roomBox.w, roomBox.h);
+        }
+        if (keystate[SDL_SCANCODE_DOWN])
+        {
+            direction = "d";
+            room.box(roomBox.x, roomBox.y - yScaled / 2, roomBox.w, roomBox.h);
+        }
+
+        player.setDirection(direction);
+
+        success = true;
     }
+
     return success;
 }
 
@@ -182,6 +188,12 @@ bool Game::drawScene()
     bool success = false;
     if (sdlIsLoaded())
     {
+        // keep track of start and end time to smooth out fps
+        clock_t startRender;
+        clock_t endRender;
+        startRender = clock();
+
+        // render the room first
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, room.texture(), NULL, room.box());
 
@@ -192,11 +204,18 @@ bool Game::drawScene()
             player.togglePlayerAnimation(renderer);
         }
 
+        // then render the player
         SDL_RenderCopy(renderer, player.texture(), NULL, player.box());
         SDL_RenderPresent(renderer);
 
+        endRender = clock();
+        clock_t delta = endRender - startRender;
+        int deltaMilli = (delta / CLOCKS_PER_SEC) * 1000;
+
+        //std::cout << "delta = " << delta << " ticks (" << deltaMilli << " milliseconds)" << std::endl;
+
         // reduce the frame rate for debugging. there should be a cap eventually...
-        SDL_Delay(150);
+        SDL_Delay(150 - deltaMilli); //1000/30 = 30 fps...
 
         success = true;
     }

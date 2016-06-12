@@ -12,9 +12,9 @@ Player::Player()
 {
     // initialize texture and info here
     // set direction of animation to front facing, no previous state
-    directionToAnimate.push_back('d');
-    directionToAnimate.push_back('-');
-    directionToAnimate.push_back('n');
+    directionToAnimate.push_back('d'); // player facing (d = down = towards screen)
+    directionToAnimate.push_back('-'); // separator
+    directionToAnimate.push_back('n'); // prev
 
     movePlayer = false;
     forceAnimation = false;
