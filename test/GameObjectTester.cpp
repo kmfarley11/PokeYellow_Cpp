@@ -22,21 +22,21 @@ public:
 
 // verify we handle invalid texture setup
 // (valid input is handled at a higher level in the GameTester)
-TEST(GameObject, loadTexture_HandlesInvalidInputs)
+TEST(GameObject, LoadTexture_HandlesInvalidInputs)
 {
     GameObjectMock goMock;
 
-    goMock.loadTexture("", NULL);
+    goMock.LoadTexture("", NULL);
 
     // note an std out msg can be expected as well
-    EXPECT_TRUE(goMock.texture() == NULL);
+    EXPECT_TRUE(goMock.Texture() == NULL);
 }
 
-TEST(GameObject, box_SetsBoxWithInputtedParams)
+TEST(GameObject, Box_SetsBoxWithInputtedParams)
 {
     GameObjectMock goMock;
 
-    SDL_Rect returnVal = goMock.box(1,1,1,1);
+    SDL_Rect returnVal = goMock.Box(1,1,1,1);
 
     EXPECT_TRUE(returnVal.x == 1);
     EXPECT_TRUE(returnVal.y == 1);

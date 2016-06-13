@@ -18,14 +18,13 @@ public:
     Player();
     ~Player();
     
-    void togglePlayerAnimation(SDL_Renderer* renderer);
-    void setDirection(std::string direction);
-    bool shouldMove();
-    bool forceAnimation;
+    void TogglePlayerAnimation(SDL_Renderer* renderer);
+    void SetDirection(std::string direction);
     
 private:
     std::string playerInfo;
     std::string directionToAnimate;
+    bool forceAnimation;
     bool movePlayer;
     //List<Pokemon> pkmn;
 };

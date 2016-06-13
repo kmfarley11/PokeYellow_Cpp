@@ -33,7 +33,7 @@ bool Room::ScrollBox()
     if (currentAmountToScroll > 0)
     {
         continueScrolling = true;
-        const SDL_Rect roomBox = *box();
+        const SDL_Rect roomBox = *Box();
         int newX = roomBox.x;
         int newY = roomBox.y;
 
@@ -54,7 +54,7 @@ bool Room::ScrollBox()
             newY -= 1;
         }
 
-        box(newX, newY, roomBox.w, roomBox.h);
+        Box(newX, newY, roomBox.w, roomBox.h);
         currentAmountToScroll--;
     }
 

@@ -40,24 +40,24 @@ class Game
 public:
     Game();
     ~Game();
-    bool initGame();
-    bool handleInput();
-    bool drawScene();
-    bool animateScene();
-    bool setupRendering();
+    bool InitGame();
+    bool HandleInput();
+    bool DrawScene();
+    bool AnimateScene();
+    bool SetupRendering();
 
-    bool isRunning();
-    bool sdlIsLoaded();
+    bool IsRunning();
+    bool SdlIsLoaded();
 
     // getters / setters
-    void setScreenWidth(int);
-    void setScreenHeight(int);
-    void setWindowFlags(int);
-    int getScreenWidth();
-    int getScreenHeight();
-    int getWindowFlags();
-    bool hasWindow();
-    bool hasRenderer();
+    void SetScreenWidth(int);
+    void SetScreenHeight(int);
+    void SetWindowFlags(int);
+    int GetScreenWidth();
+    int GetScreenHeight();
+    int GetWindowFlags();
+    bool HasWindow();
+    bool HasRenderer();
 
 private:
     Player player;        // store user data

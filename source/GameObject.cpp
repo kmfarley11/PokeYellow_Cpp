@@ -22,7 +22,7 @@ GameObject::~GameObject()
     }
 }
 
-SDL_Texture* GameObject::loadTexture(std::string path, SDL_Renderer* renderer)
+SDL_Texture* GameObject::LoadTexture(std::string path, SDL_Renderer* renderer)
 {
     // load image as a surface (raw pixels)
     SDL_Surface* surface = IMG_Load(path.c_str());
@@ -43,23 +43,23 @@ SDL_Texture* GameObject::loadTexture(std::string path, SDL_Renderer* renderer)
     return objectTexture;
 }
 
-SDL_Texture* GameObject::texture()
+SDL_Texture* GameObject::Texture()
 {
     return objectTexture;
 }
 
-SDL_Texture* GameObject::texture(SDL_Texture* inTexture)
+SDL_Texture* GameObject::Texture(SDL_Texture* inTexture)
 {
     objectTexture = inTexture;
     return objectTexture;
 }
 
-const SDL_Rect* GameObject::box()
+const SDL_Rect* GameObject::Box()
 {
     return &objectBox;
 }
 
-SDL_Rect GameObject::box(int x, int y, int width, int height)
+SDL_Rect GameObject::Box(int x, int y, int width, int height)
 {
     objectBox.x = x;
     objectBox.y = y;

@@ -32,44 +32,44 @@ public:
 // NOTE: a lot of this will change when we implement enums instead of string parsing
 
 // verify direciton setting
-TEST(Player, setDirection_TakesValidInput)
+TEST(Player, SetDirection_TakesValidInput)
 {
     PlayerMock pMock;
 
-    pMock.setDirection("l");
+    pMock.SetDirection("l");
     EXPECT_TRUE(pMock.shouldMove());
 }
 
 // verify direciton setting
-TEST(Player, setDirection_HandlesInvalidInput)
+TEST(Player, SetDirection_HandlesInvalidInput)
 {
     PlayerMock pMock;
 
-    pMock.setDirection("n");
-    EXPECT_FALSE(pMock.shouldMove());
+    pMock.SetDirection("n");
+    EXPECT_FALSE(pMock.ShouldMove());
 }
 
 // verify direciton setting
-TEST(Player, setDirection_HandlesAnimationInProgress)
+TEST(Player, SetDirection_HandlesAnimationInProgress)
 {
     PlayerMock pMock;
 
     pMock.ForceAnimate();
-    pMock.setDirection("n");
-    EXPECT_FALSE(pMock.shouldMove());
+    pMock.SetDirection("n");
+    EXPECT_FALSE(pMock.ShouldMove());
 }
 
 // add more units when enums are implemented
-TEST(Player, togglePlayerAnimation_TogglesForceAnimation)
+TEST(Player, TogglePlayerAnimation_TogglesForceAnimation)
 {
     PlayerMock pMock;
 
-    pMock.setDirection("l");
-    EXPECT_TRUE(pMock.shouldMove());
+    pMock.SetDirection("l");
+    EXPECT_TRUE(pMock.ShouldMove());
     EXPECT_FALSE(pMock.ShouldForceAnimation());
 
-    pMock.togglePlayerAnimation(NULL);
+    pMock.TogglePlayerAnimation(NULL);
 
-    EXPECT_FALSE(pMock.shouldMove());
+    EXPECT_FALSE(pMock.ShouldMove());
     EXPECT_TRUE(pMock.ShouldForceAnimation());
 }

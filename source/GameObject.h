@@ -31,12 +31,12 @@ public:
     GameObject();
     ~GameObject();
 
-    SDL_Texture* loadTexture(std::string path, SDL_Renderer* renderer);
+    SDL_Texture* LoadTexture(std::string path, SDL_Renderer* renderer);
 
-    const SDL_Rect* box();
-    SDL_Rect box(int x, int y, int width, int height);
-    SDL_Texture* texture();
-    SDL_Texture* texture(SDL_Texture* inTexture);
+    const SDL_Rect* Box();
+    SDL_Rect Box(int x, int y, int width, int height);
+    SDL_Texture* Texture();
+    SDL_Texture* Texture(SDL_Texture* inTexture);
 
     std::string objectDescription;
     

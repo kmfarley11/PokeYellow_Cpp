@@ -27,7 +27,7 @@ Player::~Player()
     // texture is freed in base class GameObject, no need to do anything here... yet...
 }
 
-void Player::setDirection(std::string direction)
+void Player::SetDirection(std::string direction)
 {
     // Note: direction is a char cardinal indicator for now, this should be an enum eventually (would be cleaner)
     if (direction.compare("n") != 0 && !forceAnimation)
@@ -41,15 +41,10 @@ void Player::setDirection(std::string direction)
     }
 }
 
-bool Player::shouldMove()
-{
-    return movePlayer;
-}
-
 // toggle player textures for animation purposes
-void Player::togglePlayerAnimation(SDL_Renderer* renderer)
+void Player::TogglePlayerAnimation(SDL_Renderer* renderer)
 {
-    if (shouldMove() || forceAnimation)
+    if (movePlayer || forceAnimation)
     {
         std::string imgToUse = "...";
         std::string navSlash = "../resources/";
@@ -78,10 +73,10 @@ void Player::togglePlayerAnimation(SDL_Renderer* renderer)
         }
 
         // clean up outdated texture before loading a new one
-        if (texture() != NULL)
+        if (Texture() != NULL)
         {
-            SDL_DestroyTexture(texture());
-            texture(NULL);
+            SDL_DestroyTexture(Texture());
+            Texture(NULL);
         }
 
         // decide which foot moves first based on what the previous step was
@@ -99,10 +94,11 @@ void Player::togglePlayerAnimation(SDL_Renderer* renderer)
             }
         }
 
-        loadTexture(navSlash + imgToUse + ".png", renderer);
+        LoadTexture(navSlash + imgToUse + ".png", renderer);
 
         forceAnimation = !forceAnimation; // every other time we need to force the middle position
 
         movePlayer = false;
     }
 }
+

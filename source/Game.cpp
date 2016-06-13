@@ -26,8 +26,8 @@ Game::Game()
     running = false;
     sdlLoaded = false;
     gameWindow = NULL;
-    room.texture(NULL);
-    player.texture(NULL);
+    room.Texture(NULL);
+    player.Texture(NULL);
     renderer = NULL;
 
     screenWidth = SCREEN_WIDTH;
@@ -56,7 +56,7 @@ Game::~Game()
 }
 
 // Interfacing methods
-bool Game::initGame()
+bool Game::InitGame()
 {
     std::string genErrString = " encountered an issue: ";
 
@@ -78,7 +78,7 @@ bool Game::initGame()
         return false;
     }
 
-    if (!setupRendering())
+    if (!SetupRendering())
     {
         std::cout << "SDL" << genErrString << "in render setup" << std::endl;
         return false;
@@ -93,17 +93,17 @@ bool Game::initGame()
 
     // init hit box(es)
     //room.box(0, 0, screenWidth, screenHeight);
-    room.box(0, 0, roomSizeX, roomSizeY);
-    player.box(256, 256, xScaled, yScaled); // 256 is an arbitrary px location on the map chosen for debugging
+    room.Box(0, 0, roomSizeX, roomSizeY);
+    player.Box(256, 256, xScaled, yScaled); // 256 is an arbitrary px location on the map chosen for debugging
 
     // depending on the project run environment, load our specific image
     // (_MSC_VER determines the visual studio version being used)
 #if _MSC_VER > 0
-    room.loadTexture("resources\\pallet_town_background_tileset.png", renderer); // FOR WINDOWS (Visual Studio)
-    player.loadTexture("resources\\PlayerFront0.png", renderer);
+    room.LoadTexture("resources\\pallet_town_background_tileset.png", renderer); // FOR WINDOWS (Visual Studio)
+    player.LoadTexture("resources\\PlayerFront0.png", renderer);
 #else
-    room.loadTexture("../resources/pallet_town_background_tileset.png", renderer); // FOR LINUX / MINGW
-    player.loadTexture("../resources/PlayerFront0.png", renderer);
+    room.LoadTexture("../resources/pallet_town_background_tileset.png", renderer); // FOR LINUX / MINGW
+    player.LoadTexture("../resources/PlayerFront0.png", renderer);
 #endif
 
     /*
@@ -123,10 +123,10 @@ bool Game::initGame()
     return true;
 }
 
-bool Game::handleInput()
+bool Game::HandleInput()
 {
     bool success = false;
-    if (sdlIsLoaded())
+    if (SdlIsLoaded())
     {
         // Poll events for single-hit keys, mouse events, window events, etc... (continuous key presses are utilized in a different fashion)
         SDL_Event event;
@@ -150,7 +150,7 @@ bool Game::handleInput()
         // player image (direction) updates via keyboard input (arrow keys)
         // map scrolls according to direction + collision processing + window / sprite scaling
         std::string direction = "n";
-        const SDL_Rect roomBox = *room.box();
+        const SDL_Rect roomBox = *room.Box();
         int amountToScroll = 0;
 
         // continuous-response keys (scan keyboard snapshot)
@@ -181,7 +181,7 @@ bool Game::handleInput()
         //{
         room.SetBoxScrolling(direction[0], amountToScroll);
         //}
-        player.setDirection(direction);
+        player.SetDirection(direction);
 
         success = true;
     }
@@ -189,15 +189,15 @@ bool Game::handleInput()
     return success;
 }
 
-bool Game::drawScene()
+bool Game::DrawScene()
 {
     bool success = false;
-    if (sdlIsLoaded())
+    if (SdlIsLoaded())
     {
         // render the already-loaded textures
         SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, room.texture(), NULL, room.box());
-        SDL_RenderCopy(renderer, player.texture(), NULL, player.box());
+        SDL_RenderCopy(renderer, room.Texture(), NULL, room.Box());
+        SDL_RenderCopy(renderer, player.Texture(), NULL, player.Box());
         SDL_RenderPresent(renderer);
         success = true;
     }
@@ -205,10 +205,10 @@ bool Game::drawScene()
     return success;
 }
 
-bool Game::animateScene()
+bool Game::AnimateScene()
 {
     bool success = false;
-    if (sdlIsLoaded())
+    if (SdlIsLoaded())
     {
         // keep track of start and end time to smooth out fps
         clock_t startRender;
@@ -217,17 +217,17 @@ bool Game::animateScene()
                 
         // TODO: implement different scene / animation types: if (animationtype == mapscrolling)...
         // first render all, and start the animation
-        player.togglePlayerAnimation(renderer);
-        drawScene();
+        player.TogglePlayerAnimation(renderer);
+        DrawScene();
 
         // for smooth scrolling, incrementally render the scroll and toggle the player halfway through
         while (room.ScrollBox())
         {
             if (room.AtScrollHalfwayMark())
             {
-                player.togglePlayerAnimation(renderer);
+                player.TogglePlayerAnimation(renderer);
             }
-            drawScene();
+            DrawScene();
 
             // 1000 / FPS = ms needed for full animation to take: divide by num of iterations used in this loop to smooth the scrolling
             SDL_Delay((1000/DESIRED_FPS) / room.FullAmountToScroll());
@@ -249,7 +249,7 @@ bool Game::animateScene()
     return success;
 }
 
-bool Game::setupRendering()
+bool Game::SetupRendering()
 {
     //Initialize PNG loading
     int imgFlags = IMG_INIT_PNG;
@@ -270,53 +270,53 @@ bool Game::setupRendering()
     return true;
 }
 
-bool Game::isRunning()
+bool Game::IsRunning()
 {
     return running;
 }
 
-bool Game::sdlIsLoaded()
+bool Game::SdlIsLoaded()
 {
     return sdlLoaded;
 }
 
 // Getters / Setters...
-void Game::setScreenWidth(int screenWidthInput)
+void Game::SetScreenWidth(int screenWidthInput)
 {
     screenWidth = screenWidthInput;
 }
 
-void Game::setScreenHeight(int screenHeightInput)
+void Game::SetScreenHeight(int screenHeightInput)
 {
     screenHeight = screenHeightInput;
 }
 
-void Game::setWindowFlags(int windowFlagsInput)
+void Game::SetWindowFlags(int windowFlagsInput)
 {
     windowFlags = windowFlagsInput;
 }
 
-int Game::getScreenWidth()
+int Game::GetScreenWidth()
 {
     return screenWidth;
 }
 
-int Game::getScreenHeight()
+int Game::GetScreenHeight()
 {
     return screenHeight;
 }
 
-int Game::getWindowFlags()
+int Game::GetWindowFlags()
 {
     return windowFlags;
 }
 
-bool Game::hasWindow()
+bool Game::HasWindow()
 {
     return (gameWindow != NULL);
 }
 
-bool Game::hasRenderer()
+bool Game::HasRenderer()
 {
     return (renderer != NULL);
 }

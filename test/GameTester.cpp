@@ -53,13 +53,13 @@ TEST(Game, constuctor_SetsUp)
     // the call to a local Live() function which sets check to true
     EXPECT_TRUE(gMock->isAlive);
 
-    EXPECT_FALSE(gMock->isRunning());
-    EXPECT_FALSE(gMock->sdlIsLoaded());
-    EXPECT_FALSE(gMock->hasWindow());
+    EXPECT_FALSE(gMock->IsRunning());
+    EXPECT_FALSE(gMock->SdlIsLoaded());
+    EXPECT_FALSE(gMock->HasWindow());
 
-    EXPECT_TRUE(gMock->getScreenWidth() == SCREEN_WIDTH);
-    EXPECT_TRUE(gMock->getScreenHeight() == SCREEN_HEIGHT);
-    EXPECT_TRUE(gMock->getWindowFlags() == mock_FLAGS);
+    EXPECT_TRUE(gMock->GetScreenWidth() == SCREEN_WIDTH);
+    EXPECT_TRUE(gMock->GetScreenHeight() == SCREEN_HEIGHT);
+    EXPECT_TRUE(gMock->GetWindowFlags() == mock_FLAGS);
 
     // more for suppression than expectation
     EXPECT_CALL(*gMock, Die()).Times(AnyNumber());
@@ -74,62 +74,62 @@ TEST(Game, destructor_TearsDown)
     delete gMock;
 }
 
-TEST(Game, isRunning_ReportsCorrectGameStatus)
+TEST(Game, IsRunning_ReportsCorrectGameStatus)
 {
     GameMock gMock;
-    EXPECT_FALSE(gMock.isRunning());
+    EXPECT_FALSE(gMock.IsRunning());
     gMock.initGame();
-    EXPECT_TRUE(gMock.isRunning());
+    EXPECT_TRUE(gMock.IsRunning());
 
     // more for suppression than expectation
     EXPECT_CALL(gMock, Die()).Times(AnyNumber());
 }
 
-TEST(Game, initGame_Succeeds)
+TEST(Game, InitGame_Succeeds)
 {
     GameMock gMock;
-    EXPECT_TRUE(gMock.initGame());
-    EXPECT_TRUE(gMock.sdlIsLoaded());
-    EXPECT_TRUE(gMock.hasWindow());
-    EXPECT_TRUE(gMock.isRunning());
+    EXPECT_TRUE(gMock.InitGame());
+    EXPECT_TRUE(gMock.SdlIsLoaded());
+    EXPECT_TRUE(gMock.HasWindow());
+    EXPECT_TRUE(gMock.IsRunning());
 
     // more for suppression than expectation
     EXPECT_CALL(gMock, Die()).Times(AnyNumber());
 }
 
-TEST(Game, handleInput_FailsWithoutSdlInit)
+TEST(Game, HandleInput_FailsWithoutSdlInit)
 {
     GameMock gMock;
-    EXPECT_FALSE(gMock.handleInput());
+    EXPECT_FALSE(gMock.HandleInput());
 
     // more for suppression than expectation
     EXPECT_CALL(gMock, Die()).Times(AnyNumber());
 }
 
-TEST(Game, handleInput_SucceedsWithSdlInit)
-{
-    GameMock gMock;
-    gMock.initGame();
-    EXPECT_TRUE(gMock.handleInput());
-
-    // more for suppression than expectation
-    EXPECT_CALL(gMock, Die()).Times(AnyNumber());
-}
-
-TEST(Game, drawScene_FailsWithoutSdlInit)
-{
-    GameMock gMock;
-    EXPECT_FALSE(gMock.drawScene());
-
-    // more for suppression than expectation
-    EXPECT_CALL(gMock, Die()).Times(AnyNumber());
-}
-
-TEST(Game, drawScene_SucceedsWithSdlInit)
+TEST(Game, HandleInput_SucceedsWithSdlInit)
 {
     GameMock gMock;
     gMock.initGame();
-    EXPECT_TRUE(gMock.drawScene());
+    EXPECT_TRUE(gMock.HandleInput());
+
+    // more for suppression than expectation
+    EXPECT_CALL(gMock, Die()).Times(AnyNumber());
+}
+
+TEST(Game, DrawScene_FailsWithoutSdlInit)
+{
+    GameMock gMock;
+    EXPECT_FALSE(gMock.DrawScene());
+
+    // more for suppression than expectation
+    EXPECT_CALL(gMock, Die()).Times(AnyNumber());
+}
+
+TEST(Game, DrawScene_SucceedsWithSdlInit)
+{
+    GameMock gMock;
+    gMock.InitGame();
+    EXPECT_TRUE(gMock.DrawScene());
 
     // more for suppression than expectation
     EXPECT_CALL(gMock, Die()).Times(AnyNumber());
@@ -137,49 +137,49 @@ TEST(Game, drawScene_SucceedsWithSdlInit)
 
 /* should go in gameobject tester
 
-TEST(Game, loadTexture_SucceedsWithGoodFileInput)
+TEST(Game, LoadTexture_SucceedsWithGoodFileInput)
 {
     GameMock gMock;
-    gMock.initGame();
+    gMock.InitGame();
 
 // depending on system being run on
 #if _MSC_VER > 0
     // FOR WINDOWS (Visual Studio)
-    EXPECT_TRUE(gMock.loadTexture("resources\\PlayerFront0.png") != NULL);
+    EXPECT_TRUE(gMock.LoadTexture("resources\\PlayerFront0.png") != NULL);
 #else
     // FOR LINUX / MINGW
-    EXPECT_TRUE(gMock.loadTexture("../resources/PlayerFront0.png") != NULL);
+    EXPECT_TRUE(gMock.LoadTexture("../resources/PlayerFront0.png") != NULL);
 #endif
 
     // more for suppression than expectation
     EXPECT_CALL(gMock, Die()).Times(AnyNumber());
 }
 
-TEST(Game, loadTexture_ReturnsNULLWithBadFileInput)
+TEST(Game, LoadTexture_ReturnsNULLWithBadFileInput)
 {
     GameMock gMock;
-    gMock.initGame();
+    gMock.InitGame();
 
-    EXPECT_TRUE(gMock.loadTexture("thisFileDoesntExist.png") == NULL);
+    EXPECT_TRUE(gMock.LoadTexture("thisFileDoesntExist.png") == NULL);
 
     // more for suppression than expectation
     EXPECT_CALL(gMock, Die()).Times(AnyNumber());
 }*/
 
-TEST(Game, setupRendering_SucceedsAfterInit)
+TEST(Game, SetupRendering_SucceedsAfterInit)
 {
     GameMock gMock;
-    gMock.initGame();
-    EXPECT_TRUE(gMock.hasRenderer());
+    gMock.InitGame();
+    EXPECT_TRUE(gMock.HasRenderer());
 
     // more for suppression than expectation
     EXPECT_CALL(gMock, Die()).Times(AnyNumber());
 }
 
-TEST(Game, setupRendering_FailsBeforeInit)
+TEST(Game, SetupRendering_FailsBeforeInit)
 {
     GameMock gMock;
-    EXPECT_FALSE(gMock.hasRenderer());
+    EXPECT_FALSE(gMock.HasRenderer());
 
     // more for suppression than expectation
     EXPECT_CALL(gMock, Die()).Times(AnyNumber());
