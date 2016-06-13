@@ -35,9 +35,11 @@ public:
 TEST(Player, SetDirection_TakesValidInput)
 {
     PlayerMock pMock;
+//    std::cout << pMock.directionToAnimate << std::endl;
 
     pMock.SetDirection("l");
-    EXPECT_TRUE(pMock.shouldMove());
+    bool retVal = pMock.ShouldMove();
+    EXPECT_TRUE(retVal);
 }
 
 // verify direciton setting

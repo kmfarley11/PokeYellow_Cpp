@@ -25,6 +25,5 @@ public:
 TEST(Room, IMPLEMENT_ME)
 {
     RoomMock rMock;
-    EXPECT_TRUE(true);
 }
 

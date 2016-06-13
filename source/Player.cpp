@@ -41,6 +41,11 @@ void Player::SetDirection(std::string direction)
     }
 }
 
+bool Player::ShouldMove()
+{
+    return movePlayer;
+}
+
 // toggle player textures for animation purposes
 void Player::TogglePlayerAnimation(SDL_Renderer* renderer)
 {

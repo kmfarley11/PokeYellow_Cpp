@@ -78,7 +78,7 @@ TEST(Game, IsRunning_ReportsCorrectGameStatus)
 {
     GameMock gMock;
     EXPECT_FALSE(gMock.IsRunning());
-    gMock.initGame();
+    gMock.InitGame();
     EXPECT_TRUE(gMock.IsRunning());
 
     // more for suppression than expectation
@@ -109,7 +109,7 @@ TEST(Game, HandleInput_FailsWithoutSdlInit)
 TEST(Game, HandleInput_SucceedsWithSdlInit)
 {
     GameMock gMock;
-    gMock.initGame();
+    gMock.InitGame();
     EXPECT_TRUE(gMock.HandleInput());
 
     // more for suppression than expectation
