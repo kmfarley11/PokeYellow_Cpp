@@ -11,6 +11,7 @@
 GameObject::GameObject()
 {
     objectDescription = "default game obj description: loads image texture and holds hit box info";
+    objectTexture = NULL;
 }
 
 GameObject::~GameObject()

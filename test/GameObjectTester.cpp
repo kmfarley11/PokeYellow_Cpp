@@ -36,10 +36,10 @@ TEST(GameObject, Box_SetsBoxWithInputtedParams)
 {
     GameObjectMock goMock;
 
-    SDL_Rect returnVal = goMock.Box(1,1,1,1);
+    SDL_Rect returnVal = goMock.Box(1,15,432,384);
 
     EXPECT_TRUE(returnVal.x == 1);
-    EXPECT_TRUE(returnVal.y == 1);
-    EXPECT_TRUE(returnVal.w == 1);
-    EXPECT_TRUE(returnVal.h == 1);
+    EXPECT_TRUE(returnVal.y == 15);
+    EXPECT_TRUE(returnVal.w == 432);
+    EXPECT_TRUE(returnVal.h == 384);
 }
