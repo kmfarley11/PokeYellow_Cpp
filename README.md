@@ -9,6 +9,14 @@ This information is currently for developers only, no stable release yet
 
 Tool Usage Plan
 ==============
+
+CMake
+--------------
+ - install / build management
+ - to ease cross platform support
+ - package cmake for linux
+ - only CMakeLists.txt will be maintained
+
 SDL2 (and SDL2_image)
 --------------
  - Window creation / management
