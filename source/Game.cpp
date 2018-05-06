@@ -63,6 +63,7 @@ bool Game::InitGame()
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
         std::cout << "SDL" << genErrString << "init failed" << std::endl;
+        std::cout << "Error = " << SDL_GetError() << std::endl;
         return false;
     }
 

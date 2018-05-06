@@ -21,8 +21,9 @@ set (CMAKE_CXX_STANDARD 11)
 #)
 
 # add binary tree to search path for include files
-include_directories ("${PROJECT_SOURCE_DIR}/source" "${PROJECT_SOURCE_DIR}/deps/include")
-link_directories ("${PROJECT_SOURCE_DIR}/deps/lib")
+include_directories ("${PROJECT_SOURCE_DIR}/source")
+#include_directories ("${PROJECT_SOURCE_DIR}/source" "${PROJECT_SOURCE_DIR}/deps/include")
+#link_directories ("${PROJECT_SOURCE_DIR}/deps/lib")
 
 add_subdirectory(source)
-
+add_subdirectory(test)

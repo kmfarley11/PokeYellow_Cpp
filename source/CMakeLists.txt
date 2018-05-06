@@ -1,14 +1,7 @@
-# headers, sources, lib definitions etc.
-set (LIB_HEADERS
-)
-
-set (LIB_SOURCES
-)
-
-set (APP_HEADERS
-)
-
-set(APP_SOURCES
+##########################################
+# define local recipe and executable name
+##########################################
+set (APP_SOURCES
 	main.cpp
 	Game.cpp
 	GameObject.cpp
@@ -18,9 +11,12 @@ set(APP_SOURCES
 
 add_executable(${PROJECT_NAME} ${APP_SOURCES})
 
-INCLUDE(FindPkgConfig)
-PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
-PKG_SEARCH_MODULE(SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
-INCLUDE_DIRECTORIES (${SDL2_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIRS})
-TARGET_LINK_LIBRARIES (${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES})
+##########################################
+# INCLUDES (sdl2/image)
+##########################################
+include (FindPkgConfig)
+pkg_search_module (SDL2 REQUIRED sdl2)
+pkg_search_module (SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
+include_directories (${SDL2_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIRS})
+target_link_libraries (${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES})
 
