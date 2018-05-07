@@ -14,7 +14,10 @@ CMake
 --------------
  - install / build management
  - to ease cross platform support
+    - MSVC-style : cmake . -G "Visual Studio 15 2017"
+    - UNIX-style : cmake . 
  - package cmake for linux
+ - https://cmake.org/download/ for either linux or windows
  - only CMakeLists.txt will be maintained
 
 SDL2 (and SDL2_image)
@@ -26,7 +29,7 @@ SDL2 (and SDL2_image)
  - Download and install both: 
     - [SDL2](https://www.libsdl.org/download-2.0.php#source) (package libsdl2-dev for linux)
     - [SDL2_Image](https://www.libsdl.org/projects/SDL_image/) (package libsdl2-image-dev for linux)
-  
+    - Note: if using windows, extract the devel folders obtained into the deps folder and rename them as SDL2 and SDL2_image
 OpenGL
 --------------
  - Low level Graphics enhancements

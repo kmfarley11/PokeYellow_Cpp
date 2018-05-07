@@ -12,3 +12,8 @@
 **/Debug
 **/*.vs
 **/*.opendb
+**/CMakeCache.txt
+**/CMakeFiles/*
+**/gtest/*
+**/Makefile
+**/cmake_install.cmake

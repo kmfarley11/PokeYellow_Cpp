@@ -13,17 +13,16 @@ set (APPLICATION_NAME tester)
 add_executable (${APPLICATION_NAME} ${APP_SOURCES})
 
 ##########################################
-# INCLUDES (sdl2/image + gtest + gmock)...
+# EXTRA INCLUDES (sdl2 / -image + gtest + gmock)...
 ##########################################
-
-# include / force sdl2 / sdl2-image
-include (FindPkgConfig)
-pkg_search_module (SDL2 REQUIRED sdl2)
-pkg_search_module (SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
+# after getting the paths, actually include them
+include("${PROJECT_SOURCE_DIR}/FindSDL2.cmake")
 include_directories (${SDL2_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIRS})
 target_link_libraries (${APPLICATION_NAME} ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES})
 
 # download gtest and include as external static proj
+# note: derived / copied from the solution found here: 
+# https://github.com/kaizouman/gtest-cmake-example
 find_package(Threads REQUIRED)
 include (ExternalProject)
 ExternalProject_Add (
