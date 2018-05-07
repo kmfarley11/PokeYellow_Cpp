@@ -13,8 +13,14 @@
  // use this macro to avoid SDL from creating its own main() override
 #define SDL_MAIN_HANDLED 1
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#if _MSC_VER > 0
+    // if in windows, expect include directory to be direct
+    #include "SDL.h"
+    #include "SDL_image.h"
+#else
+    #include <SDL2/SDL.h>
+    #include <SDL2/SDL_image.h>
+#endif
 
 #endif
 

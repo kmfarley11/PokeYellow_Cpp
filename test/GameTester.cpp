@@ -145,7 +145,7 @@ TEST(Game, LoadTexture_SucceedsWithGoodFileInput)
 // depending on system being run on
 #if _MSC_VER > 0
     // FOR WINDOWS (Visual Studio)
-    EXPECT_TRUE(gMock.LoadTexture("resources\\PlayerFront0.png") != NULL);
+    EXPECT_TRUE(gMock.LoadTexture("..\\resources\\PlayerFront0.png") != NULL);
 #else
     // FOR LINUX / MINGW
     EXPECT_TRUE(gMock.LoadTexture("../resources/PlayerFront0.png") != NULL);

@@ -55,7 +55,7 @@ void Player::TogglePlayerAnimation(SDL_Renderer* renderer)
         std::string navSlash = "../resources/";
 
 #if _MSC_VER > 0
-        navSlash = "resources\\"; // FOR WINDOWS (Visual Studio)
+        navSlash = "..\\resources\\"; // FOR WINDOWS (Visual Studio)
 #endif
 
         switch (directionToAnimate[0])

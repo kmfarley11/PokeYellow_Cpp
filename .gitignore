@@ -17,3 +17,6 @@
 **/gtest/*
 **/Makefile
 **/cmake_install.cmake
+**/SDL2*
+**/Release
+**/*.pc

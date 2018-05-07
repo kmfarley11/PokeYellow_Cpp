@@ -15,6 +15,7 @@ CMake
  - install / build management
  - to ease cross platform support
     - MSVC-style : cmake . -G "Visual Studio 15 2017"
+       - Note: for tester project will also need to : Project Properties > C/C++ > Code Generation > Runtime Library = Mutli-threaded Debug (/MTd)
     - UNIX-style : cmake . 
  - package cmake for linux
  - https://cmake.org/download/ for either linux or windows
