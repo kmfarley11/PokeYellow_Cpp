@@ -16,6 +16,25 @@ set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/lib")
 # add binary tree to search path for include files
 include_directories ("${CMAKE_CURRENT_LIST_DIR}/source")
 
+# for MSVC make all code use proper (multi-threaded) runtime libs for gtest to work
+# found here: https://github.com/xmfbit/gtest-VisualStudio-CMake-example/blob/master/CMakeLists.txt
+if(MSVC)
+  set(variables 
+    CMAKE_CXX_FLAGS_DEBUG
+    CMAKE_CXX_FLAGS_RELEASE
+	CMAKE_CXX_FLAGS_RELWITHDEBINFO
+	CMAKE_CXX_FLAGS_MINSIZEREL
+  )
+  foreach(variable ${variables})
+	if(${variable} MATCHES "/MD")
+	  string(REGEX REPLACE "/MD" "/MT" ${variable} "${${variable}}")
+	endif()
+  endforeach()
+endif()
+
+# add sdl2 to main solution if necessary (msvc only)
+include("${CMAKE_HOME_DIRECTORY}/FindSDL2.cmake")
+
 add_subdirectory (source)
 add_subdirectory (test)
 

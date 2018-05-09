@@ -3,29 +3,75 @@
 ##############################################
 if (UNIX)
 
-  # if linux / unix very simple... just find it
+  # if linux / unix very simple... just find it or throw error
   include(FindPkgConfig)
   pkg_search_module(SDL2 REQUIRED sdl2)
   pkg_search_module(SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
 
 elseif (WIN32 OR MSVC)
+  
+  # make more robust for windows to avoid dev headaches... check then dl if needed
+  include(FindPkgConfig)
+  pkg_search_module(SDL2 sdl2)
+  pkg_search_module(SDL2IMAGE SDL2_image>=2.0.0)
 
-  # if windows, expect dev to extract to deps folder and remove version from name
-  set(SDL2_DIR "${CMAKE_CURRENT_LIST_DIR}/deps/SDL2")
-  set(SDL2IMAGE_DIR "${CMAKE_CURRENT_LIST_DIR}/deps/SDL2_image")
+  # if not found, use manual pathing
+  # download sdl2, and sdl2image as external projs
+  # note: derived / copied from the solution found here: 
+  # https://gist.github.com/SergNikitin/d8d9441120d00459201d
+  set (SDL2_BASE_URL https://www.libsdl.org/)
 
-  set(SDL2_INCLUDE_DIRS "${SDL2_DIR}/include")
-  set(SDL2IMAGE_INCLUDE_DIRS "${SDL2IMAGE_DIR}/include")
-
+  # VC vs MINGW dev libs
+  if (MSVC)
+    set (SDL2_URL_EXT release/SDL2-devel-2.0.8-VC.zip)
+    set (SDL2_IMAGE_URL_EXT projects/SDL_image/release/SDL2_image-devel-2.0.3-VC.zip)
+    set (SDL2_DIR ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2/src/sdl2_files)
+    set (SDL2IMAGE_DIR ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2_image/src/sdl2_image_files)
+  else ()
+    set (SDL2_URL_EXT release/SDL2-devel-2.0.8-mingw.tar.gz)
+    set (SDL2_IMAGE_URL_EXT projects/SDL_image/release/SDL2_image-devel-2.0.3-mingw.tar.gz)
+    set (SDL2_DIR ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2/src/sdl2_files/x86_64-w64-mingw32)
+    set (SDL2IMAGE_DIR ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2_image/src/sdl2_image_files/x86_64-w64-mingw32)
+  endif ()
+  
   # Support both 32 and 64 bit builds
   if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
-    set(SDL2_LIBRARIES "${SDL2_DIR}/lib/x64/SDL2.lib;${SDL2_DIR}/lib/x64/SDL2main.lib")
-    set(SDL2IMAGE_LIBRARIES "${SDL2IMAGE_DIR}/lib/x64/SDL2_image.lib")
+    set(ARCH "/lib/x64/")
   else ()
-    set(SDL2_LIBRARIES "${SDL2_DIR}/lib/x86/SDL2.lib;${SDL2_DIR}/lib/x86/SDL2main.lib")
-    set(SDL2IMAGE_LIBRARIES "${SDL2IMAGE_DIR}/lib/x86/SDL2_image.lib")
+    set(ARCH "/lib/x86/")
   endif ()
 
-  string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
+  include (ExternalProject)
+  if (NOT SDL2_FOUND)
+    if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2)
+      ExternalProject_Add (
+        sdl2_files
+        URL ${SDL2_BASE_URL}${SDL2_URL_EXT}
+        PREFIX ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2
+        # disable steps
+        # CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ""
+      )
+    endif()
+    set (SDL2_INCLUDE_DIRS "${SDL2_DIR}/include")
+    set (SDL2_LIBRARIES "${SDL2_DIR}${ARCH}SDL2.lib;${SDL2_DIR}${ARCH}SDL2main.lib")
+  endif ()
 
+  if (NOT SDL2IMAGE_FOUND)
+    if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2_image)
+      ExternalProject_Add (
+        sdl2_image_files
+        URL ${SDL2_BASE_URL}${SDL2_IMAGE_URL_EXT}
+        PREFIX ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2_image
+        # disable steps
+        # CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ""
+      )
+    endif ()
+    set (SDL2IMAGE_INCLUDE_DIRS "${SDL2IMAGE_DIR}/include")
+    set (SDL2IMAGE_LIBRARIES "${SDL2IMAGE_DIR}${ARCH}SDL2_image.lib")
+  endif ()
+  string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
 endif (UNIX)
