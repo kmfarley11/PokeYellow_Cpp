@@ -33,7 +33,7 @@ if(MSVC)
 endif()
 
 # add sdl2 to main solution if necessary (msvc only)
-include("${CMAKE_HOME_DIRECTORY}/FindSDL2.cmake")
+include("${CMAKE_HOME_DIRECTORY}/GetSDL2.cmake")
 
 add_subdirectory (source)
 add_subdirectory (test)

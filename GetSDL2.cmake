@@ -27,11 +27,13 @@ elseif (WIN32 OR MSVC)
     set (SDL2_IMAGE_URL_EXT projects/SDL_image/release/SDL2_image-devel-2.0.3-VC.zip)
     set (SDL2_DIR ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2/src/sdl2_files)
     set (SDL2IMAGE_DIR ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2_image/src/sdl2_image_files)
+    set (INSTALL_LOC ${CMAKE_CURRENT_LIST_DIR}/bin/Debug)
   else ()
     set (SDL2_URL_EXT release/SDL2-devel-2.0.8-mingw.tar.gz)
     set (SDL2_IMAGE_URL_EXT projects/SDL_image/release/SDL2_image-devel-2.0.3-mingw.tar.gz)
     set (SDL2_DIR ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2/src/sdl2_files/x86_64-w64-mingw32)
     set (SDL2IMAGE_DIR ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2_image/src/sdl2_image_files/x86_64-w64-mingw32)
+    set (INSTALL_LOC ${CMAKE_CURRENT_LIST_DIR}/bin)
   endif ()
   
   # Support both 32 and 64 bit builds
@@ -48,14 +50,20 @@ elseif (WIN32 OR MSVC)
         sdl2_files
         URL ${SDL2_BASE_URL}${SDL2_URL_EXT}
         PREFIX ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2
-        # disable steps
-        # CONFIGURE_COMMAND ""
+        # disable build
+	CONFIGURE_COMMAND cmake -E make_directory ${INSTALL_LOC}
         BUILD_COMMAND ""
-        INSTALL_COMMAND ""
+        INSTALL_COMMAND cmake -E copy_directory ${SDL2_DIR}/bin ${INSTALL_LOC}
       )
     endif()
     set (SDL2_INCLUDE_DIRS "${SDL2_DIR}/include")
-    set (SDL2_LIBRARIES "${SDL2_DIR}${ARCH}SDL2.lib;${SDL2_DIR}${ARCH}SDL2main.lib")
+    if (MSVC)
+      set (SDL2_LIBRARIES "${SDL2_DIR}${ARCH}SDL2main.lib;${SDL2_DIR}${ARCH}SDL2.lib")
+    else ()
+      # for mingw add extra sdl2 include path and different lib files (should prolly be cleaner)
+      set (SDL2_INCLUDE_DIRS "${SDL2_INCLUDE_DIRS}" "${SDL2_DIR}/include/SDL2")
+      set (SDL2_LIBRARIES "${SDL2_DIR}/lib/libSDL2main.a;${SDL2_DIR}/lib/libSDL2.a")
+    endif ()
   endif ()
 
   if (NOT SDL2IMAGE_FOUND)
@@ -65,13 +73,19 @@ elseif (WIN32 OR MSVC)
         URL ${SDL2_BASE_URL}${SDL2_IMAGE_URL_EXT}
         PREFIX ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2_image
         # disable steps
-        # CONFIGURE_COMMAND ""
+	CONFIGURE_COMMAND cmake -E make_directory ${INSTALL_LOC}
         BUILD_COMMAND ""
-        INSTALL_COMMAND ""
+        INSTALL_COMMAND cmake -E copy_directory ${SDL2IMAGE_DIR}/bin ${INSTALL_LOC}
       )
     endif ()
     set (SDL2IMAGE_INCLUDE_DIRS "${SDL2IMAGE_DIR}/include")
-    set (SDL2IMAGE_LIBRARIES "${SDL2IMAGE_DIR}${ARCH}SDL2_image.lib")
+    if (MSVC)
+      set (SDL2IMAGE_LIBRARIES "${SDL2IMAGE_DIR}${ARCH}SDL2_image.lib")
+    else ()
+      # for mingw add extra sdl2 include path and different lib files (should prolly be cleaner)
+      set (SDL2IMAGE_INCLUDE_DIRS "${SDL2IMAGE_INCLUDE_DIRS}" "${SDL2IMAGE_DIR}/include/SDL2")
+      set (SDL2IMAGE_LIBRARIES "${SDL2IMAGE_DIR}/lib/libSDL2_image.a")
+    endif ()
   endif ()
-  string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
+  string (STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
 endif (UNIX)
