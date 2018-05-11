@@ -21,3 +21,6 @@
 **/Release
 **/*.pc
 **/*.a
+**/Testing
+**/CTestTestfile*
+**/*.tcl

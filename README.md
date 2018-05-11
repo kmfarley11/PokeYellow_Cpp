@@ -14,12 +14,11 @@ CMake
 --------------
  - install / build management
  - to ease cross platform support
-    - MSVC-style : cmake . -G "Visual Studio 15 2017"
-       - Note: for tester project will also need to : Project Properties > C/C++ > Code Generation > Runtime Library = Mutli-threaded Debug (/MTd)
-    - UNIX-style : cmake . 
+    - MSVC-Project-style : cmake . -G "Visual Studio 15 2017"
+    - UNIX-Makefile-style : cmake . 
+    - MINGW-Makefile-style : cmake . -G "MinGW Makefiles"
  - package cmake for linux
  - https://cmake.org/download/ for either linux or windows
- - only CMakeLists.txt will be maintained
 
 SDL2 (and SDL2_image)
 --------------
@@ -27,10 +26,10 @@ SDL2 (and SDL2_image)
  - Music integration
  - Controller interface
  - Basic image / sprite loading
- - Download and install both: 
-    - [SDL2](https://www.libsdl.org/download-2.0.php#source) (package libsdl2-dev for linux)
-    - [SDL2_Image](https://www.libsdl.org/projects/SDL_image/) (package libsdl2-image-dev for linux)
-    - Note: if using windows, extract the devel folders obtained into the deps folder and rename them as SDL2 and SDL2_image
+ - If Linux install both (cmake will download for you if using mingw or msvc):
+    - [SDL2](https://www.libsdl.org/download-2.0.php#source) (package libsdl2-dev/SDL2-devel for linux)
+    - [SDL2_Image](https://www.libsdl.org/projects/SDL_image/) (package libsdl2-image-dev/SDL2_image-devel for linux)
+
 OpenGL
 --------------
  - Low level Graphics enhancements
@@ -67,18 +66,14 @@ Cpp / Git Expectations
 Standard (clean) C++ coding practice ...
 --------------
  - code should be readable
-  - this means that the intent of the code should be obvious, if not then comment
-  - coding style should also be consistent with what is already in place...
-   - i.e. "{" on their own line etc.
+    - this means that the intent of the code should be obvious, if not then comment
+    - coding style should also be consistent with what is already in place...
+       - i.e. "{" on their own line etc.
  - unit tests should be maintained and enhanced
-  - this will not be strongly enforced until most classes (core dev) has already been done)
-   - no need to lock code down until a definitive structure is in place
-  - pull requests will only be merged if all unit tests pass
-  - NOTE: unit tests will only run in a linux environment at the moment
-   - google test/mock have been causing problems with VC / mingw
- - no project (nor object) files should be pushed into the repo (other than Makefiles)
-  - Makefiles should be maintained accordingly
- 
+    - this will not be strongly enforced until most classes (core dev) has already been done)
+       - no need to lock code down until a definitive structure is in place
+    - pull requests will only be merged if all unit tests pass (just run tester exe after building)
+ - no project (nor object) files should be pushed into the repo (other than CMakeLists.txt and .cmake files)
 
 *THE FOLLOWING ARE SUBJECT TO CHANGE*
 Code Design (Data Abstraction) 
