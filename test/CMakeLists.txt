@@ -35,3 +35,9 @@ if(NOT SDL2IMAGE_FOUND)
   add_dependencies(${PROJECT_NAME} sdl2_image_files)
 endif()
 
+##########################################
+# UNIT TESTS (integrate ctest & gtest)
+##########################################
+include(CTest)
+add_test(NAME all_tests COMMAND ${PROJECT_NAME} WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}/bin")
+

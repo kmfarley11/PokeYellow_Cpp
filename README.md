@@ -16,8 +16,14 @@ Installation / Usage
  - build the source (i.e. "make")
     - binaries will be placed in ./bin
  - run PokeYellow_Cpp for the game, tester for the unit tests
-    - unit tests can also be run via ctest from the root directory
-    - if using Visual Studio, run an instance on the RUN_TESTS project then Test > Run > All Tests
+    - unit tests can also be run via ctest from the test directory
+    - Visual Studio users:
+       - open up Project.sln at the root of the repo and build the whole solution
+       - to run, right click on PokeYellow_Cpp and debug instance
+          - note: Release isn't implicitly supported right now, you will have to copy the dlls into that folder
+       - for unit testing: Test > Run > All Tests
+    - note: Unix makefiles, mingw makefiles, and Visual Studio 2017 were the only ports tested
+       - if you desire a different IDE or setup and find it doesn't work, you are welcome to open issues or modify the cmake files
 
 Tool Details
 ==============

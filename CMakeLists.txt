@@ -44,9 +44,6 @@ include("${CMAKE_HOME_DIRECTORY}/GetSDL2.cmake")
 add_subdirectory(source)
 add_subdirectory(test)
 
-##########################################
-# UNIT TESTS (integrate ctest & gtest)
-##########################################
-include(CTest)
-add_test(NAME all_tests COMMAND tester WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}/bin")
+set(CMAKE_DEFAULT_STARTUP_PROJECT PokeYellow_Cpp)
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "PokeYellow_Cpp")
 
