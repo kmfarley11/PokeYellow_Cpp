@@ -7,7 +7,19 @@ NOTE: since this is a project of significant scope being built (essentially) fro
 
 This information is currently for developers only, no stable release yet
 
-Tool Usage Plan
+Installation / Usage
+==============
+ - obtain [cmake](https://cmake.org/download/)
+ - clone or download the source code from here
+ - (linux only) install the development packages for sdl2 and sdl2_image (via apt or yum etc.)
+ - cd into the root of PokeYellow_Cpp and run cmake . (see the tool details for examples)
+ - build the source (i.e. "make")
+    - binaries will be placed in ./bin
+ - run PokeYellow_Cpp for the game, tester for the unit tests
+    - unit tests can also be run via ctest from the root directory
+    - if using Visual Studio, run an instance on the RUN_TESTS project then Test > Run > All Tests
+
+Tool Details
 ==============
 
 CMake
@@ -27,8 +39,8 @@ SDL2 (and SDL2_image)
  - Controller interface
  - Basic image / sprite loading
  - If Linux install both (cmake will download for you if using mingw or msvc):
-    - [SDL2](https://www.libsdl.org/download-2.0.php#source) (package libsdl2-dev/SDL2-devel for linux)
-    - [SDL2_Image](https://www.libsdl.org/projects/SDL_image/) (package libsdl2-image-dev/SDL2_image-devel for linux)
+    - [SDL2](https://www.libsdl.org/download-2.0.php#source) : package libsdl2-dev/SDL2-devel for linux
+    - [SDL2_Image](https://www.libsdl.org/projects/SDL_image/) : package libsdl2-image-dev/SDL2_image-devel for linux
 
 OpenGL
 --------------
@@ -58,6 +70,7 @@ Tiled
 tmxparser
 --------------
  - Not set in stone; however, this would make tmx data easier to handle
+ - Not in use yet
  - The con would be yet another 3rd party dependancy which may add overhead
  - Follow installation instructions here: https://github.com/andrewrk/tmxparser
 
