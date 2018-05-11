@@ -24,3 +24,8 @@
 **/Testing
 **/CTestTestfile*
 **/*.tcl
+**/*.cbp
+**/*.layout
+**/*.project
+**/*.cproject
+**/*.metadata
