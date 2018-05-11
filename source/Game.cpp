@@ -63,6 +63,7 @@ bool Game::InitGame()
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
         std::cout << "SDL" << genErrString << "init failed" << std::endl;
+        std::cout << "Error = " << SDL_GetError() << std::endl;
         return false;
     }
 
@@ -99,8 +100,8 @@ bool Game::InitGame()
     // depending on the project run environment, load our specific image
     // (_MSC_VER determines the visual studio version being used)
 #if _MSC_VER > 0
-    room.LoadTexture("resources\\pallet_town_background_tileset.png", renderer); // FOR WINDOWS (Visual Studio)
-    player.LoadTexture("resources\\PlayerFront0.png", renderer);
+    room.LoadTexture("..\\resources\\pallet_town_background_tileset.png", renderer); // FOR WINDOWS (Visual Studio)
+    player.LoadTexture("..\\resources\\PlayerFront0.png", renderer);
 #else
     room.LoadTexture("../resources/pallet_town_background_tileset.png", renderer); // FOR LINUX / MINGW
     player.LoadTexture("../resources/PlayerFront0.png", renderer);

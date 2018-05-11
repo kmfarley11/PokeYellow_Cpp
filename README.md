@@ -7,18 +7,47 @@ NOTE: since this is a project of significant scope being built (essentially) fro
 
 This information is currently for developers only, no stable release yet
 
-Tool Usage Plan
+Installation / Usage
 ==============
+ - obtain [cmake](https://cmake.org/download/)
+ - clone or download the source code from here
+ - (linux only) install the development packages for sdl2 and sdl2_image (via apt or yum etc.)
+ - cd into the root of PokeYellow_Cpp and run cmake . (see the tool details for examples)
+ - build the source (i.e. "make")
+    - binaries will be placed in ./bin
+ - run PokeYellow_Cpp for the game, tester for the unit tests
+    - unit tests can also be run via ctest from the test directory
+    - Visual Studio users:
+       - open up Project.sln at the root of the repo and build the whole solution
+       - to run, right click on PokeYellow_Cpp and debug instance
+          - note: Release isn't implicitly supported right now, you will have to copy the dlls into that folder
+       - for unit testing: Test > Run > All Tests
+    - note: Unix makefiles, mingw makefiles, and Visual Studio 2017 were the only ports tested
+       - if you desire a different IDE or setup and find it doesn't work, you are welcome to open issues or modify the cmake files
+
+Tool Details
+==============
+
+CMake
+--------------
+ - install / build management
+ - to ease cross platform support
+    - MSVC-Project-style : cmake . -G "Visual Studio 15 2017"
+    - UNIX-Makefile-style : cmake . 
+    - MINGW-Makefile-style : cmake . -G "MinGW Makefiles"
+ - package cmake for linux
+ - https://cmake.org/download/ for either linux or windows
+
 SDL2 (and SDL2_image)
 --------------
  - Window creation / management
  - Music integration
  - Controller interface
  - Basic image / sprite loading
- - Download and install both: 
-    - [SDL2](https://www.libsdl.org/download-2.0.php#source) (package libsdl2-dev for linux)
-    - [SDL2_Image](https://www.libsdl.org/projects/SDL_image/) (package libsdl2-image-dev for linux)
-  
+ - If Linux install both (cmake will download for you if using mingw or msvc):
+    - [SDL2](https://www.libsdl.org/download-2.0.php#source) : package libsdl2-dev/SDL2-devel for linux
+    - [SDL2_Image](https://www.libsdl.org/projects/SDL_image/) : package libsdl2-image-dev/SDL2_image-devel for linux
+
 OpenGL
 --------------
  - Low level Graphics enhancements
@@ -47,6 +76,7 @@ Tiled
 tmxparser
 --------------
  - Not set in stone; however, this would make tmx data easier to handle
+ - Not in use yet
  - The con would be yet another 3rd party dependancy which may add overhead
  - Follow installation instructions here: https://github.com/andrewrk/tmxparser
 
@@ -55,18 +85,14 @@ Cpp / Git Expectations
 Standard (clean) C++ coding practice ...
 --------------
  - code should be readable
-  - this means that the intent of the code should be obvious, if not then comment
-  - coding style should also be consistent with what is already in place...
-   - i.e. "{" on their own line etc.
+    - this means that the intent of the code should be obvious, if not then comment
+    - coding style should also be consistent with what is already in place...
+       - i.e. "{" on their own line etc.
  - unit tests should be maintained and enhanced
-  - this will not be strongly enforced until most classes (core dev) has already been done)
-   - no need to lock code down until a definitive structure is in place
-  - pull requests will only be merged if all unit tests pass
-  - NOTE: unit tests will only run in a linux environment at the moment
-   - google test/mock have been causing problems with VC / mingw
- - no project (nor object) files should be pushed into the repo (other than Makefiles)
-  - Makefiles should be maintained accordingly
- 
+    - this will not be strongly enforced until most classes (core dev) has already been done)
+       - no need to lock code down until a definitive structure is in place
+    - pull requests will only be merged if all unit tests pass (just run tester exe after building)
+ - no project (nor object) files should be pushed into the repo (other than CMakeLists.txt and .cmake files)
 
 *THE FOLLOWING ARE SUBJECT TO CHANGE*
 Code Design (Data Abstraction) 
