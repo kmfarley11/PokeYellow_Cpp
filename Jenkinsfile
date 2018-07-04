@@ -35,8 +35,11 @@ fi
       steps {
         echo 'now testin\''
         sh '''# run ctest
-cd test
-ctest'''
+# cd test
+# ctest
+# run gtest
+cd bin
+./tester'''
       }
     }
   }
