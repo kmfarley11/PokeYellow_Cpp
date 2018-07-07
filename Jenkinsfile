@@ -15,7 +15,7 @@ ls
 git checkout master 
 git pull origin master
 # also setup env vars (X11 forwarding)
-export DISPLAY:=0'''
+export DISPLAY=:0'''
       }
     }
     stage('Build') {
