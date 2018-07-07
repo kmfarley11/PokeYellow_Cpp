@@ -35,14 +35,9 @@ fi
     stage('Test') {
       steps {
         echo 'now testin\''
-        sh '''# ssh localhost with x11 forwarding for tests (sdl) to work
-echo "$(pwd)" > ~/wd.txt
-yes | ssh-keygen -N "" -f ~/.ssh/id_rsa.localhost
-chmod 400 ~/.ssh/id_rsa.localhost
-cat ~/.ssh/id_rsa.localhost.pub >> ~/.ssh/authorized_keys
-ssh -oUserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no -i ~/.ssh/id_rsa.localhost -X localhost
-cd $(cat ~/wd.txt)
-export DISPLAY=:0
+        sh '''# need to set display as remote\'s xserver for it to work
+export DISPLAY=:0.0
+echo $DISPLAY
 
 # run ctest
 # cd test
