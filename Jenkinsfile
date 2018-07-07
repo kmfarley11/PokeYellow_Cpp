@@ -38,7 +38,7 @@ fi
         sh '''# need to set display as remote\'s xserver for it to work
 # export DISPLAY=:0.0 # note: set as global prop now...
 echo $DISPLAY
-#env
+env
 
 # run ctest
 # cd test
