@@ -36,7 +36,7 @@ fi
       steps {
         echo 'now testin\''
         sh '''# need to set display as remote\'s xserver for it to work
-export DISPLAY=:0.0
+# export DISPLAY=:0.0 # note: set as global prop now...
 echo $DISPLAY
 
 # run ctest
