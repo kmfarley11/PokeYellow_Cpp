@@ -14,8 +14,16 @@ pwd
 ls 
 git checkout master 
 git pull origin master
+
 # also setup env vars (X11 forwarding)
-export DISPLAY=:0'''
+echo $(pwd) > ~/wd.txt
+yes | ssh-keygen -N "" -f ~/.ssh/id_rsa.local
+chmod 400 ~/.ssh/id_rsa.local
+cat ~/.ssh/id_rsa.local.pub >> ~/.ssh/authorized_keys
+ssh -oUserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no -i ~/.ssh/id_rsa.local -X localhost
+cd $(cat wd.txt)
+export DISPLAY=:0
+'''
       }
     }
     stage('Build') {
