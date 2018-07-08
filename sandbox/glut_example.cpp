@@ -1,6 +1,8 @@
 #include <IL/il.h>
 #include <GL/glut.h>
- 
+
+// Example code / sandbox file to test openGL stuff. Note: as of first commit of the file, most source was obtained from:
+// https://www.opengl.org/discussion_boards/showthread.php/181714-Does-opengl-help-in-the-display-of-an-existing-image
  
 #define DEFAULT_WIDTH  640
 #define DEFAULT_HEIGHT 480
