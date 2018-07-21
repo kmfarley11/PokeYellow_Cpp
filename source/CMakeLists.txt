@@ -7,7 +7,7 @@ file(GLOB APP_SOURCES *.cpp)
 file(GLOB APP_HEADERS *.h)
 
 # ensure we have sdl2
-include("${CMAKE_HOME_DIRECTORY}/GetSDL2.cmake")
+include("${CMAKE_MODULE_PATH}/GetSDL2.cmake")
 include_directories(${SDL2_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIRS})
 
 add_executable(${PROJECT_NAME} ${APP_SOURCES} ${APP_HEADERS})

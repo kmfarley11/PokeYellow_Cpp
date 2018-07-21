@@ -12,16 +12,20 @@ Installation / Usage
  - obtain [cmake](https://cmake.org/download/)
  - clone or download the source code from here
  - (linux only) install the development packages for sdl2 and sdl2_image (via apt or yum etc.)
- - cd into the root of PokeYellow_Cpp and run cmake . (see the tool details for examples)
+ - cd into the root of PokeYellow_Cpp and run 'cmake .' (see the tool details for examples)
  - build the source (i.e. "make")
     - binaries will be placed in ./bin
  - run PokeYellow_Cpp for the game, tester for the unit tests
     - unit tests can also be run via ctest from the test directory
-    - Visual Studio users:
+    - Visual Studio (Windows-Only) users:
        - open up Project.sln at the root of the repo and build the whole solution
        - to run, right click on PokeYellow_Cpp and debug instance
           - note: Release isn't implicitly supported right now, you will have to copy the dlls into that folder
        - for unit testing: Test > Run > All Tests
+    - Visual Studio Code (Linux-Only) users:
+       - the .vscode/ folder is already included in the repo, but tasks are designed only for Linux w/ Makefile usage
+       - suggested extensions include: C/C++, C/C++ Clang Command Adapter
+       - to debug: Tasks > Run Task... > config debug, Tasks > Run Task... > build, then F5
     - note: Unix makefiles, mingw makefiles, and Visual Studio 2017 were the only ports tested
        - if you desire a different IDE or setup and find it doesn't work, you are welcome to open issues or modify the cmake files
 
@@ -40,6 +44,7 @@ CMake
 
 SDL2 (and SDL2_image)
 --------------
+ - Note: currently considering replacing with glew, glut etc. for graphics see Issue #13
  - Window creation / management
  - Music integration
  - Controller interface
@@ -93,6 +98,7 @@ Standard (clean) C++ coding practice ...
        - no need to lock code down until a definitive structure is in place
     - pull requests will only be merged if all unit tests pass (just run tester exe after building)
  - no project (nor object) files should be pushed into the repo (other than CMakeLists.txt and .cmake files)
+    - one exception being .vscode as the files within are relatively pathed, and lightweight
 
 *THE FOLLOWING ARE SUBJECT TO CHANGE*
 Code Design (Data Abstraction) 

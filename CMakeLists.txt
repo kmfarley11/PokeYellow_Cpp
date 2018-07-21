@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 # some cmake org
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/modules)
 
 # versioning
 set(MyProj_VERSION_MAJOR 1)
@@ -39,7 +39,7 @@ if(MSVC)
 endif()
 
 # add sdl2 to main solution if necessary (msvc only)
-include("${CMAKE_HOME_DIRECTORY}/GetSDL2.cmake")
+include("${CMAKE_MODULE_PATH}/GetSDL2.cmake")
 
 add_subdirectory(source)
 add_subdirectory(test)

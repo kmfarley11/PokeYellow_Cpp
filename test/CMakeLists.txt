@@ -8,7 +8,7 @@ file(GLOB APP_SOURCES ${CMAKE_HOME_DIRECTORY}/source/*.cpp)
 list(REMOVE_ITEM APP_SOURCES ${CMAKE_HOME_DIRECTORY}/source/main.cpp)
 
 # ensure we have sdl2
-include("${CMAKE_HOME_DIRECTORY}/GetSDL2.cmake")
+include("${CMAKE_MODULE_PATH}/GetSDL2.cmake")
 if(MINGW)
   # need to call out related libs for mingw as it is a static lib
   set(SDL2_LIBRARIES "mingw32" ${SDL2_LIBRARIES} "imagehlp" "m" "dinput8" "dxguid" "dxerr8" "user32" "gdi32" "winmm" "imm32" "ole32" "oleaut32" "shell32" "version" "uuid")
@@ -16,7 +16,7 @@ endif()
 include_directories(${SDL2_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIRS})
 
 # ensure we have gtest
-include("${CMAKE_HOME_DIRECTORY}/GetGtest.cmake")
+include("${CMAKE_MODULE_PATH}/GetGtest.cmake")
 enable_testing()
 
 add_executable(${PROJECT_NAME} ${APP_SOURCES} ${TEST_SOURCES})
