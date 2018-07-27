@@ -29,3 +29,4 @@
 **/*.project
 **/*.cproject
 **/*.metadata
+**/bin/*
