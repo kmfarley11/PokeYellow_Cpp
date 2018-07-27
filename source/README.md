@@ -13,9 +13,4 @@ Code Design (Data Abstraction)
  - Player (class): will control information about the user (including the team & inventory & sprite collision)
  - Enemy (class): will load and control information about current enemy trainer (including team & inventory)
  - Room (class): will control current map info (route X, cave X, GYM X, etc)
- - Npc (class): will describe actions for an npc to do  which is loaded from the database, for a particular map
- 
- Any dll files found here need to be in the same directory as the executable. We should eventually direct these to a bin folder
-  
-  
-  
+ - Npc (class): will describe actions for an npc to do  which is loaded from the database, for a particular map  

@@ -1,0 +1,54 @@
+// Place your key bindings in this file to overwrite the defaults
+// NOTE: overrides some defaults (build key combo)
+// NOTE: to run yourself, symlink to ~/.config/Code/User
+// DISCLAIMER: i do not guarantee this will work for all OSs/keyboards
+// if applicable you should back up your local keybindings.json
+// to overload/symlink in linux (creates ~ backup file too):
+// ln -sTb $(pwd)/keybindings.json ~/.config/Code/User/keybindings.json
+[
+    {
+        // overload build default to k/b so we can specify ctrl/shift/b
+        "key": "ctrl+k ctrl+b",
+        "command": "workbench.action.tasks.build",
+    },
+    {
+        "key": "ctrl+shift+b",
+        "command": "workbench.action.tasks.runTask",
+        "args": "build"
+    },
+    {
+        "key": "ctrl+shift+c",
+        "command": "workbench.action.tasks.runTask",
+        "args": "clean"
+    },
+    /*{
+        // overload debug view default to k/d so we can do ctrl/shift/d
+        "key": "ctrl+k ctrl+d",
+        "command": "workbench.view.debug",
+    },*/
+    {
+        "key": "ctrl+k ctrl+d",
+        "command": "workbench.action.tasks.runTask",
+        "args": "config debug"
+    },
+    { 
+        // overload keybind ref so we can use ctrl/shift/r for config rel
+        "key": "ctrl+k ctrl+shift+r",         
+        "command": "workbench.action.keybindingsReference" 
+    },
+    {
+        "key": "ctrl+k ctrl+r",
+        "command": "workbench.action.tasks.runTask",
+        "args": "config release"
+    },
+    {
+        "key": "ctrl+shift+r",
+        "command": "workbench.action.tasks.runTask",
+        "args": "run target"
+    },
+    {
+        "key": "ctrl+shift+/",
+        "command": "workbench.action.tasks.runTask",
+        "args": "run tests"
+    },
+]
