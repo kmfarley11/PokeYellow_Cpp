@@ -13,7 +13,7 @@
  // use this macro to avoid SDL from creating its own main() override
 #define SDL_MAIN_HANDLED 1
 
-#if _MSC_VER > 0
+#if _MSC_VER > 0 || __APPLE__
     // if in windows, expect include directory to be direct
     #include "SDL.h"
     #include "SDL_image.h"
