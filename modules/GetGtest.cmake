@@ -20,7 +20,7 @@ add_library(libgtest IMPORTED STATIC GLOBAL)
 add_dependencies(libgtest gtest)
 if(UNIX OR MINGW)
 set_target_properties(libgtest PROPERTIES
-	"IMPORTED_LOCATION" "${binary_dir}/googlemock/gtest/libgtest.a"
+	"IMPORTED_LOCATION" "${binary_dir}/lib/libgtest.a"
 	"IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
 )
 elseif(MSVC)
@@ -35,7 +35,7 @@ add_library(libgmock IMPORTED STATIC GLOBAL)
 add_dependencies(libgmock gtest)
 if(UNIX OR MINGW)
 set_target_properties(libgmock PROPERTIES
-	"IMPORTED_LOCATION" "${binary_dir}/googlemock/libgmock.a"
+	"IMPORTED_LOCATION" "${binary_dir}/lib/libgmock.a"
 	"IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
 )
 elseif(MSVC)
