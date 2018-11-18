@@ -25,7 +25,7 @@ set_target_properties(libgtest PROPERTIES
 )
 elseif(MSVC)
 set_target_properties(libgtest PROPERTIES
-	"IMPORTED_LOCATION" "${binary_dir}/googlemock/gtest/Debug/gtestd.lib"
+	"IMPORTED_LOCATION" "${binary_dir}/lib/Debug/gtestd.lib"
 	"IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
 )
 endif()
@@ -40,7 +40,7 @@ set_target_properties(libgmock PROPERTIES
 )
 elseif(MSVC)
 set_target_properties(libgmock PROPERTIES
-	"IMPORTED_LOCATION" "${binary_dir}/googlemock/Debug/gmockd.lib"
+	"IMPORTED_LOCATION" "${binary_dir}/lib/Debug/gmockd.lib"
 	"IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
 )
 endif()

@@ -35,28 +35,28 @@ elseif(WIN32 OR MSVC AND(NOT SDL2_FOUND AND NOT SDL2IMAGE_FOUND))
   if(MSVC)
     set(SDL2_URL_EXT release/SDL2-devel-2.0.8-VC.zip)
     set(SDL2_IMAGE_URL_EXT projects/SDL_image/release/SDL2_image-devel-2.0.3-VC.zip)
-    set(SDL2_DIR ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2/src/sdl2_files)
-    set(SDL2IMAGE_DIR ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2_image/src/sdl2_image_files)
-    set(INSTALL_LOC ${CMAKE_CURRENT_LIST_DIR}/bin/Debug)
+    set(SDL2_DIR ${CMAKE_HOME_DIRECTORY}/deps/SDL2/src/sdl2_files)
+    set(SDL2IMAGE_DIR ${CMAKE_HOME_DIRECTORY}/deps/SDL2_image/src/sdl2_image_files)
+    set(INSTALL_LOC ${CMAKE_HOME_DIRECTORY}/bin/Debug)
     set(SDL2IMAGE_DLL_LOC ${SDL2IMAGE_DIR}${VSARCH})
     set(SDL2_DLL_LOC ${SDL2_DIR}${VSARCH})
   else()
     set(SDL2_URL_EXT release/SDL2-devel-2.0.8-mingw.tar.gz)
     set(SDL2_IMAGE_URL_EXT projects/SDL_image/release/SDL2_image-devel-2.0.3-mingw.tar.gz)
-    set(SDL2_DIR ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2/src/sdl2_files${MINARCH})
-    set(SDL2IMAGE_DIR ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2_image/src/sdl2_image_files${MINARCH})
-    set(INSTALL_LOC ${CMAKE_CURRENT_LIST_DIR}/bin)
+    set(SDL2_DIR ${CMAKE_HOME_DIRECTORY}/deps/SDL2/src/sdl2_files${MINARCH})
+    set(SDL2IMAGE_DIR ${CMAKE_HOME_DIRECTORY}/deps/SDL2_image/src/sdl2_image_files${MINARCH})
+    set(INSTALL_LOC ${CMAKE_HOME_DIRECTORY}/bin)
     set(SDL2IMAGE_DLL_LOC ${SDL2IMAGE_DIR}/bin)
     set(SDL2_DLL_LOC ${SDL2_DIR}/bin)
   endif()
 
   include(ExternalProject)
   if(NOT SDL2_FOUND)
-    if(NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2)
+    if(NOT EXISTS ${CMAKE_HOME_DIRECTORY}/deps/SDL2)
       ExternalProject_Add(
         sdl2_files
         URL ${SDL2_BASE_URL}${SDL2_URL_EXT}
-        PREFIX ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2
+        PREFIX ${CMAKE_HOME_DIRECTORY}/deps/SDL2
         # disable build
 	CONFIGURE_COMMAND cmake -E make_directory ${INSTALL_LOC}
         BUILD_COMMAND ""
@@ -74,11 +74,11 @@ elseif(WIN32 OR MSVC AND(NOT SDL2_FOUND AND NOT SDL2IMAGE_FOUND))
   endif()
 
   if(NOT SDL2IMAGE_FOUND)
-    if(NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2_image)
+    if(NOT EXISTS ${CMAKE_HOME_DIRECTORY}/deps/SDL2_image)
       ExternalProject_Add(
         sdl2_image_files
         URL ${SDL2_BASE_URL}${SDL2_IMAGE_URL_EXT}
-        PREFIX ${CMAKE_CURRENT_LIST_DIR}/deps/SDL2_image
+        PREFIX ${CMAKE_HOME_DIRECTORY}/deps/SDL2_image
         # disable steps
 	CONFIGURE_COMMAND cmake -E make_directory ${INSTALL_LOC}
         BUILD_COMMAND ""
