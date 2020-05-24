@@ -42,14 +42,17 @@ class NotImplementedException(Exception):
     pass
 class CommandException(Exception):
     pass
+class TaskFailure(Exception):
+    pass
 #endregion
 
 
 #region helper classes
 class SpawnManager(pexpect.spawn):
     """Helper class to manage logfiles and exceptions under pexpect children"""
-    def __init__(self, *args, logpath=None, **kwargs):
+    def __init__(self, *args, logpath=None, dont_exit=False, **kwargs):
         self._logfile = logpath
+        self._dont_exit = dont_exit
         super(SpawnManager, self).__init__(*args, encoding='utf-8', **kwargs)
 
     def __enter__(self):
@@ -62,7 +65,7 @@ class SpawnManager(pexpect.spawn):
 
     def __exit__(self, type, value, tb):
         # if still alive, attempt to close via exit...
-        if self.isalive():
+        if self.isalive() and not self._dont_exit:
             self.sendline('exit')
             time.sleep(1) # arbitrary sleep before checking again
 
@@ -70,7 +73,8 @@ class SpawnManager(pexpect.spawn):
         if self.logfile and self.logfile not in [sys.stdout, sys.stderr]:
             self.logfile.close()
 
-        assert not self.isalive()
+        if not self._dont_exit:
+            assert not self.isalive()
 
     def nu_expect(self, *args, no_throw=False, **kwargs):
         """Custom expect method to use custom exceptions on timeout/EOF
@@ -168,7 +172,7 @@ def do_clean(child, native=False, wipe=False, host_path=DEFAULT_HOST_PATH):
     if not native:
         print('Using docker...')
         child.sendline('docker images')
-        if(not child.nu_expect(IMAGE_NAME, no_throw=True)):
+        if(not child.nu_expect(IMAGE_NAME, no_throw=True, timeout=5)):
             print('Docker image {} not found, moving on...'.format(
                 IMAGE_NAME))
             print('')
@@ -180,7 +184,9 @@ def do_clean(child, native=False, wipe=False, host_path=DEFAULT_HOST_PATH):
             child.sendline('docker container attach {}'.format(hashes[0]))
             child.sendline('cd {}/build'.format(GUEST_PATH))
             child.sendline('make clean')
-            child.sendline('rm -rf ./*')
+            child.sendline('cd {}'.format(GUEST_PATH))
+            child.sendline('rm -rf ./build')
+            child.sendline('exit')
 
         print('remove any containers using the image if they exist')
         # need new child process to conveniently get & use output...
@@ -198,6 +204,9 @@ def do_clean(child, native=False, wipe=False, host_path=DEFAULT_HOST_PATH):
             print('Successfully removed docker image "{}"'.format(IMAGE_NAME))
 
     else:
+        print('Cleaning native environment. Note if you have done non-native '
+              'builds you may want to run this clean without the native option'
+              ' first.')
         # on native system, prety simple, make clean, rmdir, mkdir...
         child.sendline('cd {}{}build'.format(host_path, os.sep))
         child.sendline('{} clean'.format(get_build_cmd()))
@@ -232,13 +241,14 @@ def do_init(child, native=False, host_path=DEFAULT_HOST_PATH):
         child.nu_expect('apt-get install -y', timeout=300)
 
         print('Installing build dependencies... (may take awhile)')
-        child.nu_expect('Successfully built', timeout=300)
+        child.nu_expect('Successfully built', timeout=600)
         child.nu_expect('Successfully tagged {}:latest'.format(IMAGE_NAME))
         print('Successfully created docker image "{}"'.format(IMAGE_NAME))
 
     print('Creating detached container now...')
     child.sendline('docker run -d -t -i -v {}:{} {}:latest bash'.format(
         host_path, GUEST_PATH, IMAGE_NAME))
+    time.sleep(1)
     child.nu_expect('[0-9a-f]{64}')
 
     # not rly necessary just to see what got started...
@@ -249,40 +259,16 @@ def do_init(child, native=False, host_path=DEFAULT_HOST_PATH):
     print('')
 
 
-def do_config(child, native=False, host_path=DEFAULT_HOST_PATH):
+def do_config(child, native=False, host_path=DEFAULT_HOST_PATH,
+              pexpect_log_file=DEFAULT_PEXPECT_LOG_FILE):
     """Task to configure the build environment (cmake)"""
     print('doing config task...')
 
-    def _config_cmds(proj_path):
-        child.sendline('mkdir -p {}/build'.format(proj_path))
-        child.sendline('cd {}/build'.format(proj_path))
-        child.sendline(get_config_cmd())
-        child.nu_expect('Build files have been written to')
-
-    if not native:
-        hashes = get_container_hashes(image_name=IMAGE_NAME)
-        if not hashes:
-            raise DevEnvException(
-                'No containers running! Run the init portion...')
-                
-        child.sendline('docker container attach {}'.format(hashes[0]))
-        _config_cmds(GUEST_PATH)
-    else:
-        _config_cmds(host_path)
-
-    print('Successfully configured project')
-    print('')
-
-
-def do_build(child, native=False, host_path=DEFAULT_HOST_PATH):
-    """Task to build the project"""
-    print('doing build task...')
-    def _build_cmds(proj_path, proj_name, test_proj_name):
-        child.sendline('cd {}/build'.format(proj_path))
-        child.sendline('make')
-        child.nu_expect('Building CXX object')
-        child.nu_expect('Built target {}', proj_name)
-        child.nu_expect('Built target {}', test_proj_name)
+    def _config_cmds(proc, proj_path):
+        proc.sendline('mkdir -p {}/build'.format(proj_path))
+        proc.sendline('cd {}/build'.format(proj_path))
+        proc.sendline(get_config_cmd())
+        proc.nu_expect('Build files have been written to', timeout=60)
 
     if not native:
         hashes = get_container_hashes(image_name=IMAGE_NAME)
@@ -290,18 +276,53 @@ def do_build(child, native=False, host_path=DEFAULT_HOST_PATH):
             raise DevEnvException(
                 'No containers running! Run the init portion...')
         
-        # TODO: probably need to upfront attach to container else how detach?
-        #   maybe find way to send key combo rather than line?
-        child.sendline('docker container attach {}'.format(hashes[0]))
-        _build_cmds(GUEST_PATH, REPO_NAME, TEST_PROJ_NAME)
+        # set spawn to not exit post-context (leave detached container alone)
+        with SpawnManager(
+                'docker container attach {}'.format(hashes[0]), 
+                logpath=pexpect_log_file, dont_exit=True) as container_proc:
+            _config_cmds(container_proc, GUEST_PATH)
+            container_proc.terminate()
+
     else:
-        _build_cmds(host_path, REPO_NAME, TEST_PROJ_NAME)
+        _config_cmds(child, host_path)
+
+    print('Successfully configured project')
+    print('')
+
+
+def do_build(child, native=False, host_path=DEFAULT_HOST_PATH, 
+             pexpect_log_file=DEFAULT_PEXPECT_LOG_FILE):
+    """Task to build the project"""
+    print('doing build task...')
+    def _build_cmds(proc, proj_path, proj_name, test_proj_name):
+        proc.sendline('cd {}/build'.format(proj_path))
+        proc.sendline('make')
+        print('Build started')
+        proc.nu_expect('Built target {}', proj_name, timeout=60)
+        print('Build {} done, now building {}'.format(
+            proj_name, test_proj_name))
+        proc.nu_expect('Built target {}', test_proj_name, timeout=300)
+
+    if not native:
+        hashes = get_container_hashes(image_name=IMAGE_NAME)
+        if not hashes:
+            raise DevEnvException(
+                'No containers running! Run the init portion...')
+        
+        # set spawn to not exit post-context (leave detached container alone)
+        with SpawnManager(
+                'docker container attach {}'.format(hashes[0]), 
+                logpath=pexpect_log_file, dont_exit=True) as container_proc:
+            _build_cmds(container_proc, GUEST_PATH, REPO_NAME, TEST_PROJ_NAME)
+    else:
+        _build_cmds(child, host_path, REPO_NAME, TEST_PROJ_NAME)
 
     print('Successfully built project')
     print('')
 
 
-def do_run(child, native=False, host_path=DEFAULT_HOST_PATH):
+def do_run(child, native=False, host_path=DEFAULT_HOST_PATH,
+           pexpect_log_file=DEFAULT_PEXPECT_LOG_FILE):
     """Task to run the project"""
     print('doing run task...')
     if not native:
@@ -317,19 +338,38 @@ def do_run(child, native=False, host_path=DEFAULT_HOST_PATH):
     print('')
 
 
-def do_test(child, native=False, host_path=DEFAULT_HOST_PATH):
+def do_test(child, native=False, host_path=DEFAULT_HOST_PATH,
+            pexpect_log_file=DEFAULT_PEXPECT_LOG_FILE):
     """Task to run the test project"""
     print('doing test task...')
     if not native:
-        #SDL_VIDEODRIVER="dummy"
-        #SDL_AUDIODRIVER="dummy"
-        raise NotImplementedException('Test task not operational for docker')
-    
-    child.sendline('cd {}/bin')
-    child.sendline('.{}{}'.format(os.sep, TEST_PROJ_NAME))
-    child.nu_expect('PASSED.')
-    child.sendline('q')
-    print('')
+        hashes = get_container_hashes(image_name=IMAGE_NAME)
+        if not hashes:
+            raise DevEnvException(
+                'No containers running! Run the init portion...')
+        # set spawn to not exit post-context (leave detached container alone)
+        with SpawnManager(
+                'docker container attach {}'.format(hashes[0]), 
+                logpath=pexpect_log_file, dont_exit=True) as container_proc:
+            video_var = 'SDL_VIDEODRIVER="dummy"'
+            audio_var = 'SDL_AUDIODRIVER="dummy"'
+            # _build_cmds(container_proc, GUEST_PATH, REPO_NAME, TEST_PROJ_NAME)
+            container_proc.sendline('cd {}/bin'.format(GUEST_PATH))
+            container_proc.sendline('{} {} ./{}'.format(
+                video_var, audio_var, TEST_PROJ_NAME))
+            container_proc.nu_expect('PASSED.', timeout=30)
+            if (container_proc.nu_expect('FAILED.', timeout=1, no_throw=True)):
+                raise TaskFailure(
+                    'Some tests failed, see the log for more details')
+
+    else:
+        child.sendline('cd {}/bin'.format(host_path))
+        child.sendline('.{}{}'.format(os.sep, TEST_PROJ_NAME))
+        child.nu_expect('PASSED.', timeout=30)
+        if (child.nu_expect('FAILED.', timeout=1, no_throw=True)):
+                raise TaskFailure(
+                    'Some tests failed, see the log for more details')
+        print('')
 #endregion the meat and potatoes
 
 
@@ -393,7 +433,8 @@ def main():
         with SpawnManager(get_term_cmd(), logpath=pexpect_log_file) as child:
             # verify input and ability
             check_env(native=args.native, host_path=args.host_path)
-            if not any([args.clean, args.init]):
+            if not any([args.clean, args.init, args.config, args.build, 
+                        args.run, args.test]):
                 raise UserInputException('No operations provided...')
 
             # do operation(s) specified
@@ -403,13 +444,17 @@ def main():
             if args.init:
                 do_init(child, native=args.native, host_path=args.host_path)
             if args.config:
-                do_config(child, native=args.native, host_path=args.host_path)
+                do_config(child, native=args.native, host_path=args.host_path,
+                          pexpect_log_file=pexpect_log_file)
             if args.build:
-                do_build(child, native=args.native, host_path=args.host_path)
+                do_build(child, native=args.native, host_path=args.host_path,
+                         pexpect_log_file=pexpect_log_file)
             if args.run:
-                do_run(child, native=args.native, host_path=args.host_path)
+                do_run(child, native=args.native, host_path=args.host_path,
+                       pexpect_log_file=pexpect_log_file)
             if args.test:
-                do_test(child, native=args.native, host_path=args.host_path)
+                do_test(child, native=args.native, host_path=args.host_path,
+                        pexpect_log_file=pexpect_log_file)
             
             child.sendline('exit')
             print('Done.')
@@ -418,7 +463,7 @@ def main():
         print('Exception encountered...')
         traceback.print_exc()
         print('See log file {} for more details...'.format(pexpect_log_file))
-        arg_parser.print_help()
+        # arg_parser.print_help()
         sys.exit(1)
 
 if __name__ == '__main__':
