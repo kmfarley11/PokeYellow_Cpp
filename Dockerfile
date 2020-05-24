@@ -6,17 +6,19 @@ RUN apt-get -o Acquire::Check-Valid-Until=false -o Acquire::Check-Date=false upd
 
 ARG dev_pkgs="build-essential cmake libsdl2-dev libsdl2-image-dev wget"
 ARG misc_pkgs="vim tmux"
-RUN apt-get install -y $dev_pkgs $misc_pkgs
+RUN apt-get install -y ${dev_pkgs} ${misc_pkgs}
+
+# if sharing source with container
+ENV PROJ_NAME=PokeYellow_Cpp
+ENV MOUNT_DIR=/${PROJ_NAME}
+# if separate source from container
+ENV COPY_DIR=/${PROJ_NAME}_COPY
 
 # local files
-#COPY PokeYellow_Cpp /
+CMD mkdir -p ${COPY_DIR}
+#COPY $PWD/* ${COPY_DIR}/
+COPY $PWD/ ${COPY_DIR}/
 
-# tasks
-ENV PROJ_DIR=/PokeYellow_Cpp
-#ARG build_dir=$repo_dir/build
+# other setup tasks
+CMD mkdir -p ${MOUNT_DIR}
 
-CMD mkdir -p $PROJ_DIR 
-#CMD mkdir -p $build_dir
-#CMD cd $build_dir
-#CMD cmake $proj_dir
-#CMD make

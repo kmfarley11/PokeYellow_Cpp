@@ -30,13 +30,14 @@ REPO_NAME = 'PokeYellow_Cpp'
 TEST_PROJ_NAME = 'tester'
 DEFAULT_HOST_PATH = os.path.realpath(os.getcwd()) # resolved path to repo dir
 GUEST_PATH = '/{}'.format(REPO_NAME)
+COPY_PATH = '{}_COPY'.format(GUEST_PATH)
 #endregion
 
 
 #region custom exception(s)
 class UserInputException(Exception):
     pass
-class DevEnvException(Exception): 
+class DevEnvException(Exception):
     pass
 class NotImplementedException(Exception):
     pass
@@ -96,7 +97,7 @@ class SpawnManager(pexpect.spawn):
                 return False
             else:
                 raise CommandException(err)
-        
+
         return True
 #endregion
 
@@ -159,13 +160,15 @@ def check_env(native=False, host_path=DEFAULT_HOST_PATH):
         raise DevEnvException('Unsupported os {} found!'.format(sys.platform))
     if REPO_NAME != host_path.split(os.sep)[-1]:
         raise DevEnvException('Not being run from repo {}!'.format(REPO_NAME))
-    
+
     # TODO check for g++ mingw vs (native), docker (!native), etc. here
 
     print('Done checking dev (host) environment, good to go')
     print('')
 
 
+# TODO a cleaner implementation would be to define a task class and subclass
+#   with host class vs. container task. Construction would determine paths etc.
 def do_clean(child, native=False, wipe=False, host_path=DEFAULT_HOST_PATH):
     """Task to clean the build environment"""
     print('doing clean task...')
@@ -227,21 +230,21 @@ def do_init(child, native=False, host_path=DEFAULT_HOST_PATH):
     if native:
         print('native option selected, nothing to do...')
         return
-    
+
     child.sendline('docker images')
     if child.nu_expect(IMAGE_NAME, no_throw=True, timeout=5):
         print('Docker image {} found, moving on...'.format(IMAGE_NAME))
     else:
         print('Docker image not found, creating now')
         child.sendline('docker build -t {}:latest .'.format(IMAGE_NAME))
-    
+
         # note: timeouts were empirically determined...
         child.nu_expect('apt-get.*update')
         print('Updating package base... (may take awhile)')
         child.nu_expect('apt-get install -y', timeout=300)
 
         print('Installing build dependencies... (may take awhile)')
-        child.nu_expect('Successfully built', timeout=600)
+        child.nu_expect('Successfully built', timeout=420)
         child.nu_expect('Successfully tagged {}:latest'.format(IMAGE_NAME))
         print('Successfully created docker image "{}"'.format(IMAGE_NAME))
 
@@ -255,12 +258,11 @@ def do_init(child, native=False, host_path=DEFAULT_HOST_PATH):
     hashes = get_container_hashes(image_name=IMAGE_NAME)
     print('containers for image {}: {}'.format(IMAGE_NAME, hashes))
     print('Successfully initialized...')
-    
     print('')
 
 
 def do_config(child, native=False, host_path=DEFAULT_HOST_PATH,
-              pexpect_log_file=DEFAULT_PEXPECT_LOG_FILE):
+              pexpect_log_file=DEFAULT_PEXPECT_LOG_FILE, use_mount=False):
     """Task to configure the build environment (cmake)"""
     print('doing config task...')
 
@@ -275,12 +277,13 @@ def do_config(child, native=False, host_path=DEFAULT_HOST_PATH,
         if not hashes:
             raise DevEnvException(
                 'No containers running! Run the init portion...')
-        
+
         # set spawn to not exit post-context (leave detached container alone)
         with SpawnManager(
-                'docker container attach {}'.format(hashes[0]), 
+                'docker container attach {}'.format(hashes[0]),
                 logpath=pexpect_log_file, dont_exit=True) as container_proc:
-            _config_cmds(container_proc, GUEST_PATH)
+            src_path = GUEST_PATH if use_mount else COPY_PATH
+            _config_cmds(container_proc, src_path)
             container_proc.terminate()
 
     else:
@@ -290,8 +293,8 @@ def do_config(child, native=False, host_path=DEFAULT_HOST_PATH,
     print('')
 
 
-def do_build(child, native=False, host_path=DEFAULT_HOST_PATH, 
-             pexpect_log_file=DEFAULT_PEXPECT_LOG_FILE):
+def do_build(child, native=False, host_path=DEFAULT_HOST_PATH,
+             pexpect_log_file=DEFAULT_PEXPECT_LOG_FILE, use_mount=False):
     """Task to build the project"""
     print('doing build task...')
     def _build_cmds(proc, proj_path, proj_name, test_proj_name):
@@ -308,12 +311,13 @@ def do_build(child, native=False, host_path=DEFAULT_HOST_PATH,
         if not hashes:
             raise DevEnvException(
                 'No containers running! Run the init portion...')
-        
+
         # set spawn to not exit post-context (leave detached container alone)
         with SpawnManager(
-                'docker container attach {}'.format(hashes[0]), 
+                'docker container attach {}'.format(hashes[0]),
                 logpath=pexpect_log_file, dont_exit=True) as container_proc:
-            _build_cmds(container_proc, GUEST_PATH, REPO_NAME, TEST_PROJ_NAME)
+            src_path = GUEST_PATH if use_mount else COPY_PATH
+            _build_cmds(container_proc, src_path, REPO_NAME, TEST_PROJ_NAME)
     else:
         _build_cmds(child, host_path, REPO_NAME, TEST_PROJ_NAME)
 
@@ -339,9 +343,14 @@ def do_run(child, native=False, host_path=DEFAULT_HOST_PATH,
 
 
 def do_test(child, native=False, host_path=DEFAULT_HOST_PATH,
-            pexpect_log_file=DEFAULT_PEXPECT_LOG_FILE):
+            pexpect_log_file=DEFAULT_PEXPECT_LOG_FILE, use_mount=False):
     """Task to run the test project"""
     print('doing test task...')
+    video_var = 'SDL_VIDEODRIVER="dummy"'
+    audio_var = 'SDL_AUDIODRIVER="dummy"'
+    run_vars = '{} {}'.format(video_var, audio_var)
+    ok = '\[\s+PASSED\s+\].*tests\.'
+    fail = '\[\s+FAILED\s+\]'
     if not native:
         hashes = get_container_hashes(image_name=IMAGE_NAME)
         if not hashes:
@@ -349,26 +358,24 @@ def do_test(child, native=False, host_path=DEFAULT_HOST_PATH,
                 'No containers running! Run the init portion...')
         # set spawn to not exit post-context (leave detached container alone)
         with SpawnManager(
-                'docker container attach {}'.format(hashes[0]), 
+                'docker container attach {}'.format(hashes[0]),
                 logpath=pexpect_log_file, dont_exit=True) as container_proc:
-            video_var = 'SDL_VIDEODRIVER="dummy"'
-            audio_var = 'SDL_AUDIODRIVER="dummy"'
             # _build_cmds(container_proc, GUEST_PATH, REPO_NAME, TEST_PROJ_NAME)
-            container_proc.sendline('cd {}/bin'.format(GUEST_PATH))
-            container_proc.sendline('{} {} ./{}'.format(
-                video_var, audio_var, TEST_PROJ_NAME))
-            container_proc.nu_expect('PASSED.', timeout=30)
-            if (container_proc.nu_expect('FAILED.', timeout=1, no_throw=True)):
+            src_path = GUEST_PATH if use_mount else COPY_PATH
+            container_proc.sendline('cd {}/bin'.format(src_path))
+            container_proc.sendline('{} ./{}'.format(run_vars, TEST_PROJ_NAME))
+            # look for failures, not passing...
+            if (container_proc.nu_expect(fail, timeout=10, no_throw=True)):
                 raise TaskFailure(
                     'Some tests failed, see the log for more details')
 
     else:
         child.sendline('cd {}/bin'.format(host_path))
-        child.sendline('.{}{}'.format(os.sep, TEST_PROJ_NAME))
-        child.nu_expect('PASSED.', timeout=30)
-        if (child.nu_expect('FAILED.', timeout=1, no_throw=True)):
-                raise TaskFailure(
-                    'Some tests failed, see the log for more details')
+        child.sendline('{} .{}{}'.format(run_vars, os.sep, TEST_PROJ_NAME))
+        if (child.nu_expect(fail, timeout=10, no_throw=True)):
+            raise TaskFailure(
+                'Some tests failed, see the log for more details')
+        print('Tests appear to have passed!')
         print('')
 #endregion the meat and potatoes
 
@@ -404,8 +411,10 @@ def main():
         help='Run the tests')
     
     # less-used options don't have single character options
-    # _a('--mount-local-repo', action='store_true',
-    #     help='Use this option to share the host repo source w/ the guest.')
+    # TODO support branch ops?, copies on host?
+    _a('--use-host-src', action='store_true',
+        help='Use the host repo source as mounted to the guest. '
+             'By default container will use its own copy')
     _a('--pexpect-log-file', type=str, default=DEFAULT_PEXPECT_LOG_FILE,
         help='File to log sub-commands and their output. '
              '"stdout" and "stderr" supported as well')
@@ -439,23 +448,27 @@ def main():
 
             # do operation(s) specified
             if args.clean:
-                do_clean(child, native=args.native, wipe=args.wipe, 
+                do_clean(child, native=args.native, wipe=args.wipe,
                          host_path=args.host_path)
             if args.init:
                 do_init(child, native=args.native, host_path=args.host_path)
             if args.config:
                 do_config(child, native=args.native, host_path=args.host_path,
-                          pexpect_log_file=pexpect_log_file)
+                          pexpect_log_file=pexpect_log_file,
+                          use_mount=args.use_host_src)
             if args.build:
                 do_build(child, native=args.native, host_path=args.host_path,
-                         pexpect_log_file=pexpect_log_file)
+                         pexpect_log_file=pexpect_log_file,
+                         use_mount=args.use_host_src)
             if args.run:
                 do_run(child, native=args.native, host_path=args.host_path,
-                       pexpect_log_file=pexpect_log_file)
+                       pexpect_log_file=pexpect_log_file,
+                       use_mount=args.use_host_src)
             if args.test:
                 do_test(child, native=args.native, host_path=args.host_path,
-                        pexpect_log_file=pexpect_log_file)
-            
+                        pexpect_log_file=pexpect_log_file,
+                        use_mount=args.use_host_src)
+
             child.sendline('exit')
             print('Done.')
 
