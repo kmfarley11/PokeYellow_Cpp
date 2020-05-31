@@ -31,6 +31,7 @@ TEST_PROJ_NAME = 'tester'
 DEFAULT_HOST_PATH = os.path.realpath(os.getcwd()) # resolved path to repo dir
 GUEST_PATH = '/{}'.format(REPO_NAME)
 COPY_PATH = '{}_COPY'.format(GUEST_PATH)
+NIX_BASED_OS = ['linux', 'darwin']
 #endregion
 
 
@@ -75,6 +76,7 @@ class SpawnManager(pexpect.spawn):
             self.logfile.close()
 
         if not self._dont_exit:
+            # TODO: for some reason on mac this will still assert...
             assert not self.isalive()
 
     def nu_expect(self, *args, no_throw=False, **kwargs):
@@ -117,36 +119,34 @@ def get_container_hashes(image_name=IMAGE_NAME, get_all=False):
     return hashes
 
 # NOTE: thise get_cmds are pretty useless since pexpect seems broken with win32
-def get_term_cmd():
-    if sys.platform == 'win32':
+def get_term_cmd(native):
+    if native and sys.platform == 'win32':
         return 'cmd'
-    if sys.platform == 'linux':
+    if not native or sys.platform in NIX_BASED_OS:
         return 'bash'
 
-
-def get_del_cmd(directory=False):
-    if sys.platform == 'win32':
+def get_del_cmd(native, directory=False):
+    if native and sys.platform == 'win32':
         if directory:
             return 'rmdir /S /Q'
         else:
             return 'del'
-    if sys.platform == 'linux':
+    if not native or sys.platform in NIX_BASED_OS:
         if directory:
             return 'rm -rf'
         else:
             return 'rm'
 
-def get_config_cmd():
-    if sys.platform == 'win32':
+def get_config_cmd(native):
+    if native and sys.platform == 'win32':
         return 'cmake .. -G "MinGW Makefiles"'
-    if sys.platform == 'linux':
+    if not native or sys.platform in NIX_BASED_OS:
         return 'cmake ..'
 
-
-def get_build_cmd():
-    if sys.platform == 'win32':
+def get_build_cmd(native):
+    if native and sys.platform == 'win32':
         return 'mingw32-make'
-    if sys.platform == 'linux':
+    if not native or sys.platform in NIX_BASED_OS:
         return 'make'
 #endregion
 
@@ -155,7 +155,8 @@ def get_build_cmd():
 def check_env(native=False, host_path=DEFAULT_HOST_PATH):
     """Task to verify the dev environment before attempting build/config"""
     print('doing check task...')
-    supported_os = ['linux'] # ['win32', 'linux'] # win32 pexpect wont work...
+    supported_os = NIX_BASED_OS
+    # ['win32', 'linux'] # win32 pexpect wont work...
     if sys.platform not in supported_os:
         raise DevEnvException('Unsupported os {} found!'.format(sys.platform))
     if REPO_NAME != host_path.split(os.sep)[-1]:
@@ -212,10 +213,10 @@ def do_clean(child, native=False, wipe=False, host_path=DEFAULT_HOST_PATH):
               ' first.')
         # on native system, prety simple, make clean, rmdir, mkdir...
         child.sendline('cd {}{}build'.format(host_path, os.sep))
-        child.sendline('{} clean'.format(get_build_cmd()))
+        child.sendline('{} clean'.format(get_build_cmd(native)))
         child.sendline('cd {}'.format(host_path))
-        child.sendline('{} build'.format(get_del_cmd(directory=True)))
-        child.sendline('{} deps'.format(get_del_cmd(directory=True)))
+        child.sendline('{} build'.format(get_del_cmd(native, directory=True)))
+        child.sendline('{} deps'.format(get_del_cmd(native, directory=True)))
         #child.sendline('cleanup_all.sh')
         # TODO actually make sure dir doesn't exist...
         child.sendline('mkdir build')
@@ -269,7 +270,7 @@ def do_config(child, native=False, host_path=DEFAULT_HOST_PATH,
     def _config_cmds(proc, proj_path):
         proc.sendline('mkdir -p {}/build'.format(proj_path))
         proc.sendline('cd {}/build'.format(proj_path))
-        proc.sendline(get_config_cmd())
+        proc.sendline(get_config_cmd(native))
         proc.nu_expect('Build files have been written to', timeout=60)
 
     if not native:
@@ -439,7 +440,8 @@ def main():
             f.write('Beginning of pexpect content...\n\r')
 
     try:
-        with SpawnManager(get_term_cmd(), logpath=pexpect_log_file) as child:
+        with SpawnManager(get_term_cmd(True), 
+                logpath=pexpect_log_file) as child:
             # verify input and ability
             check_env(native=args.native, host_path=args.host_path)
             if not any([args.clean, args.init, args.config, args.build, 
@@ -462,8 +464,7 @@ def main():
                          use_mount=args.use_host_src)
             if args.run:
                 do_run(child, native=args.native, host_path=args.host_path,
-                       pexpect_log_file=pexpect_log_file,
-                       use_mount=args.use_host_src)
+                       pexpect_log_file=pexpect_log_file)
             if args.test:
                 do_test(child, native=args.native, host_path=args.host_path,
                         pexpect_log_file=pexpect_log_file,

@@ -33,3 +33,5 @@
 
 **/*.log
 .vscode/.ropeproject/
+.vscode/c_cpp_properties.json
+.DS_Store

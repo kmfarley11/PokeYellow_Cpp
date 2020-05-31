@@ -1,7 +1,7 @@
 ##########################################
 # CMAKE TOP (versioning etc.)
 ##########################################
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.1.3)
 
 # some cmake org
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/modules)
@@ -13,6 +13,7 @@ set(VERSION ${VERSION_MAJOR}.${VERSION_MINOR})
 
 # other project vars
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/lib")
 
