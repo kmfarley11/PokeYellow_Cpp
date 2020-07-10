@@ -185,6 +185,8 @@ def do_clean(child, native=False, wipe=False, host_path=DEFAULT_HOST_PATH):
         # clean the build artifacts
         hashes = get_container_hashes(image_name=IMAGE_NAME)
         if hashes:
+            # note: if deleting anyways, no need for this...
+            #   consider new option for deleting container w/ this as default
             child.sendline('docker container attach {}'.format(hashes[0]))
             child.sendline('cd {}/build'.format(GUEST_PATH))
             child.sendline('make clean')
@@ -389,6 +391,7 @@ def main():
     arg_parser = argparse.ArgumentParser(description='''
         Project CLI helper. Primarily designed for CI, 
             recommend using/looking into `cmake -G` to setup your own dev env.
+            DISCLAIMER: must be run from clean slate before doing init for the first time.
         ''')
     _a = arg_parser.add_argument
     # options with consequences don't have single character options
