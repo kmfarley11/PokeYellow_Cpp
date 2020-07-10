@@ -11,6 +11,7 @@ include("${CMAKE_MODULE_PATH}/GetSDL2.cmake")
 include_directories(${SDL2_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIRS})
 
 add_executable(${PROJECT_NAME} ${APP_SOURCES} ${APP_HEADERS})
+target_compile_definitions(${PROJECT_NAME} PRIVATE RESOURCES="${CMAKE_RESOURCES_DIRECTORY}/")
 
 if(MINGW)
   # need to call out related libs for mingw as it is a static lib

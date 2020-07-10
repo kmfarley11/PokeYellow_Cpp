@@ -36,13 +36,13 @@
         {
             "label": "run tests",
             "type": "shell",
-            "command": "cd bin/; ./tester",
+            "command": "./bin/tester",
             "problemMatcher": []
         },
         {
             "label": "run target",
             "type": "shell",
-            "command": "cd bin/; ./PokeYellow_Cpp",
+            "command": "./bin/PokeYellow_Cpp",
             "problemMatcher": []
         }
     ]

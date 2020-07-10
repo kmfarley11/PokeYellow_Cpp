@@ -30,6 +30,7 @@
 **/*.cproject
 **/*.metadata
 **/bin/*
+**/.cmake
 
 # vscode files we dont wanna track...
 .vscode/c_cpp_properties.json

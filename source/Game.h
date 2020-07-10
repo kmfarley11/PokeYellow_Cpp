@@ -26,8 +26,7 @@
 
 // handle sdl dependancy (above) better...
 
-#ifndef GAME
-#define GAME
+#pragma once
 
 #include <string>
 #include <iostream>
@@ -89,5 +88,3 @@ private:
     int xScaled;
     int yScaled;
 };
-
-#endif

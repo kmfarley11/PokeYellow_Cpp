@@ -26,9 +26,7 @@
 
 // handle sdl dependancy (above) better...
 
-#ifndef GAMEOBJECT
-#define GAMEOBJECT
-
+#pragma once
 #include <iostream>
 
 class GameObject
@@ -51,5 +49,3 @@ private:
     SDL_Rect objectBox;         // positioning / sizing for collisions etc
 
 };
-
-#endif
