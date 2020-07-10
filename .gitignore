@@ -32,6 +32,11 @@
 **/bin/*
 
 **/*.log
+.DS_Store
+**/.cmake
+
+# vscode files we dont wanna track...
 .vscode/.ropeproject/
 .vscode/c_cpp_properties.json
-.DS_Store
+.vscode/settings.json
+

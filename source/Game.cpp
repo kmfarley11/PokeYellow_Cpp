@@ -6,6 +6,7 @@
  *
  */
 #include "Game.h"
+#include "common.h"
 
 #include <fstream>
 #include <ctime>
@@ -97,15 +98,8 @@ bool Game::InitGame()
     room.Box(0, 0, roomSizeX, roomSizeY);
     player.Box(256, 256, xScaled, yScaled); // 256 is an arbitrary px location on the map chosen for debugging
 
-    // depending on the project run environment, load our specific image
-    // (_MSC_VER determines the visual studio version being used)
-#if _MSC_VER > 0
-    room.LoadTexture("..\\resources\\pallet_town_background_tileset.png", renderer); // FOR WINDOWS (Visual Studio)
-    player.LoadTexture("..\\resources\\PlayerFront0.png", renderer);
-#else
-    room.LoadTexture("../resources/pallet_town_background_tileset.png", renderer); // FOR LINUX / MINGW
-    player.LoadTexture("../resources/PlayerFront0.png", renderer);
-#endif
+    room.LoadTexture(RESOURCE_PATH + "pallet_town_background_tileset.png", renderer); // FOR LINUX / MINGW
+    player.LoadTexture(RESOURCE_PATH + "PlayerFront0.png", renderer);
 
     /*
     ///////////run tmx parsing here////////////

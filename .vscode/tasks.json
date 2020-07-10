@@ -4,37 +4,46 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "wipe",
+            "type": "shell",
+            "command": "find ./build/ -not -iname 'README.md' -not -ipath './build/' -delete -empty",
+            "problemMatcher": []
+        },
+        {
             "label": "clean",
             "type": "shell",
-            "command": "make clean; sh cleanup_all.sh",
+            "command": "make -C ./build clean;",
             "problemMatcher": []
         },
         {
             "label": "config release",
             "type": "shell",
-            "command": "cmake ."
+            "command": "cmake . -B ./build",
+            "problemMatcher": []
         },
         {
             "label": "config debug",
             "type": "shell",
-            "command": "cmake -DCMAKE_BUILD_TYPE=Debug .",
+            "command": "cmake -DCMAKE_BUILD_TYPE=Debug . -B ./build",
             "problemMatcher": []
         },
         {
             "label": "build",
             "type": "shell",
-            "command": "make",
+            "command": "make -C ./build",
             "problemMatcher": []
         },
         {
             "label": "run tests",
             "type": "shell",
-            "command": "cd bin/; ./tester"
+            "command": "./bin/tester",
+            "problemMatcher": []
         },
         {
             "label": "run target",
             "type": "shell",
-            "command": "cd bin/; ./PokeYellow_Cpp"
+            "command": "./bin/PokeYellow_Cpp",
+            "problemMatcher": []
         }
     ]
 }

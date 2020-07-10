@@ -6,8 +6,7 @@
 *
 */
 
-#ifndef PLAYER
-#define PLAYER
+#pragma once
 
 #include <string>
 #include "GameObject.h"
@@ -31,6 +30,3 @@ private:
     std::string directionToAnimate;
     //List<Pokemon> pkmn;
 };
-
-#endif
-

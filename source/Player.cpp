@@ -7,6 +7,7 @@
 */
 
 #include "Player.h"
+#include "common.h"
 
 Player::Player()
 {
@@ -52,11 +53,7 @@ void Player::TogglePlayerAnimation(SDL_Renderer* renderer)
     if (movePlayer || forceAnimation)
     {
         std::string imgToUse = "...";
-        std::string navSlash = "../resources/";
-
-#if _MSC_VER > 0
-        navSlash = "..\\resources\\"; // FOR WINDOWS (Visual Studio)
-#endif
+        std::string navSlash = RESOURCE_PATH;
 
         switch (directionToAnimate[0])
         {

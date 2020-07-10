@@ -6,8 +6,7 @@
 *
 */
 
-#ifndef ROOM
-#define ROOM
+#pragma once
 
 #include <string>
 #include "GameObject.h"
@@ -34,5 +33,3 @@ private:
     // List<NPC> npcs;
     // CollisionDetector? this will be needed eventually but not sure where it will go yet
 };
-
-#endif

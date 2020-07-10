@@ -9,7 +9,7 @@
     {
         // overload build default to k/b so we can specify ctrl/shift/b
         "key": "ctrl+k ctrl+b",
-        "command": "workbench.action.tasks.build",
+        "command": "workbench.action.tasks.build"
     },
     {
         "key": "ctrl+shift+b",
@@ -48,7 +48,11 @@
     },
     {
         "key": "ctrl+shift+/",
+        "command": "workbench.action.tasks.runTask"
+    },
+    {
+        "key": "ctrl+k ctrl+shift+t",
         "command": "workbench.action.tasks.runTask",
         "args": "run tests"
-    },
+    }
 ]

@@ -40,4 +40,4 @@ endif()
 ##########################################
 include(CTest)
 add_test(NAME all_tests COMMAND ${PROJECT_NAME} WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}/bin")
-
+target_compile_definitions(${PROJECT_NAME} PRIVATE RESOURCES="${CMAKE_RESOURCES_DIRECTORY}/")
