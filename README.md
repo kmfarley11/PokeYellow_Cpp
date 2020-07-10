@@ -12,8 +12,8 @@ Installation / Usage
  - obtain [cmake](https://cmake.org/download/)
  - clone or download the source code from here
  - (linux only) install the development packages for sdl2 and sdl2_image (via apt or yum etc.)
- - cd into the root of PokeYellow_Cpp and run 'cmake .' (see the tool details for examples)
- - build the source (i.e. "make")
+ - cd into the root of PokeYellow_Cpp and run `cmake . -B ./build` (see the tool details for examples)
+ - build the source (i.e. `make -C ./build`)
     - binaries will be placed in ./bin
  - run PokeYellow_Cpp for the game, tester for the unit tests
     - unit tests can also be run via ctest from the test directory
@@ -36,9 +36,9 @@ CMake
 --------------
  - install / build management
  - to ease cross platform support
-    - MSVC-Project-style : cmake . -G "Visual Studio 15 2017"
-    - UNIX-Makefile-style : cmake . 
-    - MINGW-Makefile-style : cmake . -G "MinGW Makefiles"
+    - MSVC-Project-style : cmake . -G "Visual Studio 15 2017" -B ./build
+    - UNIX-Makefile-style : cmake . -B ./build
+    - MINGW-Makefile-style : cmake . -G "MinGW Makefiles" -B ./build
  - package cmake for linux
  - https://cmake.org/download/ for either linux or windows
 
