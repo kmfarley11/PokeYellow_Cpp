@@ -76,7 +76,7 @@ class SpawnManager(pexpect.spawn):
             self.logfile.close()
 
         if not self._dont_exit:
-            # TODO: for some reason on mac this will still assert...
+            # TODO: for some reason if native this will still assert...
             assert not self.isalive()
 
     def nu_expect(self, *args, no_throw=False, **kwargs):
@@ -126,6 +126,7 @@ def get_term_cmd(native):
         return 'bash'
 
 def get_del_cmd(native, directory=False):
+    # note: this removes the readme.md in build/ as well...
     if native and sys.platform == 'win32':
         if directory:
             return 'rmdir /S /Q'
@@ -239,7 +240,7 @@ def do_init(child, native=False, host_path=DEFAULT_HOST_PATH):
         print('Docker image {} found, moving on...'.format(IMAGE_NAME))
     else:
         print('Docker image not found, creating now')
-        child.sendline('docker build -t {}:latest .'.format(IMAGE_NAME))
+        child.sendline('docker build -t {}:latest . -f support/Dockerfile'.format(IMAGE_NAME))
 
         # note: timeouts were empirically determined...
         child.nu_expect('apt-get.*update')
