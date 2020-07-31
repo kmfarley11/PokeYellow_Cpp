@@ -15,9 +15,11 @@ Installation / Usage
  - cd into the root of PokeYellow_Cpp and run `cmake . -B ./build` (see the tool details for examples)
  - build the source (i.e. `make -C ./build`)
     - binaries will be placed in ./bin
- - run PokeYellow_Cpp for the game, tester for the unit tests
+ - run `./bin/PokeYellow_Cpp` for the game, `./bin/tester` for the unit tests
     - unit tests can also be run via ctest from the test directory
+ - dev environment notes
     - Visual Studio (Windows-Only) users:
+       - `cmake . -G "Visual Studio 15 2017" -B ./build`
        - open up Project.sln at the root of the repo and build the whole solution
        - to run, right click on PokeYellow_Cpp and debug instance
           - note: Release isn't implicitly supported right now, you will have to copy the dlls into that folder
@@ -28,6 +30,10 @@ Installation / Usage
        - to debug: Tasks > Run Task... > config debug, Tasks > Run Task... > build, then F5
     - note: Unix makefiles, mingw makefiles, and Visual Studio 2017 were the only ports tested
        - if you desire a different IDE or setup and find it doesn't work, you are welcome to open issues or modify the cmake files
+ - note some work has been done to stand up a docker image and do some automation via python
+    - checkout `python3 support/proj.py --help` for more details
+    - i.e. `python3 support/proj.py --native --clean --config --build --test`
+    - the docker side doesn't support gui yet so some tests will fail if run without `--native`
 
 Tool Details
 ==============
@@ -36,9 +42,9 @@ CMake
 --------------
  - install / build management
  - to ease cross platform support
-    - MSVC-Project-style : cmake . -G "Visual Studio 15 2017" -B ./build
-    - UNIX-Makefile-style : cmake . -B ./build
-    - MINGW-Makefile-style : cmake . -G "MinGW Makefiles" -B ./build
+    - MSVC-Project-style : `cmake . -G "Visual Studio 15 2017" -B ./build`
+    - UNIX-Makefile-style : `cmake . -B ./build`
+    - MINGW-Makefile-style : `cmake . -G "MinGW Makefiles" -B ./build`
  - package cmake for linux
  - https://cmake.org/download/ for either linux or windows
 
