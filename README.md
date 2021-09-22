@@ -11,8 +11,8 @@ Installation / Usage
 ==============
  - obtain [cmake](https://cmake.org/download/)
  - clone or download the source code from here
- - (linux only) install the development packages for sdl2 and sdl2_image (via apt or yum etc.)
- - cd into the root of PokeYellow_Cpp and run `cmake . -B ./build` (see the tool details for examples)
+ - (linux only) install the development packages for sdl2 and sdl2_image (via apt or yum etc. i.e. `libsdl2-dev` and `libsdl2-image-dev`)
+ - cd into the root of PokeYellow_Cpp and run `cmake -S . -B ./build` (see the tool details for examples)
  - build the source (i.e. `make -C ./build`)
     - binaries will be placed in ./bin
  - run `./bin/PokeYellow_Cpp` for the game, `./bin/tester` for the unit tests
