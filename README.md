@@ -9,10 +9,10 @@ This information is currently for developers only, no stable release yet
 
 Installation / Usage
 ==============
- - obtain [cmake](https://cmake.org/download/)
+ - obtain [cmake](https://cmake.org/download/) (`sudo apt install cmake`)
  - clone or download the source code from here
- - (linux only) install the development packages for sdl2, sdl2_image, and pthreads via apt or yum etc.
-    - i.e. `sudo apt install build-essential cmake make libsdl2-dev libsdl2-image-dev libpthread-stubs0-dev`)
+ - (linux only) install the development packages for sdl2, sdl2_image, lcov, and pthreads via apt or yum etc.
+    - i.e. `sudo apt install build-essential cmake make libsdl2-dev libsdl2-image-dev libpthread-stubs0-dev lcov`)
  - cd into the root of PokeYellow_Cpp and run `cmake -S . -B ./build` (see the tool details for examples)
  - build the source (i.e. `make -C ./build`)
     - binaries will be placed in ./bin

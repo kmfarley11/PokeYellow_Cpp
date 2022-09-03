@@ -54,6 +54,17 @@
             ]
         },
         {
+            "label": "run coverage",
+            "detail": "ONLY supports UNIX systems where lcov is installed. Dumps to build/test/coverage.",
+            "type": "shell",
+            "command": "make -C ./build coverage",
+            "problemMatcher": [],
+            "group": "test",
+            "dependsOn": [
+                "config debug"
+            ]
+        },
+        {
             "label": "run target",
             "type": "shell",
             "command": "./bin/PokeYellow_Cpp",

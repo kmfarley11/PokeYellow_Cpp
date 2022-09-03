@@ -36,6 +36,21 @@ if(NOT SDL2IMAGE_FOUND)
 endif()
 
 ##########################################
+# COVERAGE (integrate gcov)
+##########################################
+if(UNIX)
+  include(CodeCoverage)
+  append_coverage_compiler_flags()
+
+  set(COVERAGE_EXCLUDES
+      ${PROJECT_SOURCE_DIR}/deps/*
+      /usr/include/*
+      /**/googletest/*
+      /**/googlemock/*)
+  setup_target_for_coverage_lcov(NAME coverage EXECUTABLE ${PROJECT_NAME})
+endif()
+
+##########################################
 # UNIT TESTS (integrate ctest & gtest)
 ##########################################
 include(CTest)
