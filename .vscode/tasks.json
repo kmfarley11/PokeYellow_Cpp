@@ -31,19 +31,37 @@
             "label": "build",
             "type": "shell",
             "command": "make -C ./build",
-            "problemMatcher": []
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": [
+                "config debug"
+            ]
         },
         {
             "label": "run tests",
             "type": "shell",
             "command": "./bin/tester",
-            "problemMatcher": []
+            "problemMatcher": [],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "dependsOn": [
+                "build"
+            ]
         },
         {
             "label": "run target",
             "type": "shell",
             "command": "./bin/PokeYellow_Cpp",
-            "problemMatcher": []
+            "problemMatcher": [],
+            "group": "test",
+            "dependsOn": [
+                "build"
+            ]
         }
     ]
 }
